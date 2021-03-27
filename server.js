@@ -135,4 +135,4 @@ app.use((err, req, res, next) => {
 });
 
 // https.createServer({ key, cert }, app).listen(environment.server.PORT);
-app.listen(4000, () => console.log('Running a GraphQL API server at http://localhost:4000/graphql'));
+app.listen(environment.server.PORT, () => console.log(`Running a GraphQL API server at ${environment.server.PORT}`));
