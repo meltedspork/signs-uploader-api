@@ -1,10 +1,4 @@
-// const fs = require("fs");
-// const https = require("https");
-
 const environment = require('./environments');
-
-// const key = fs.readFileSync("localhost-key.pem", "utf-8");
-// const cert = fs.readFileSync("localhost.pem", "utf-8");
 
 const express = require('express');
 const cors = require('cors');
@@ -134,5 +128,13 @@ app.use((err, req, res, next) => {
   next(err, req, res);
 });
 
-// https.createServer({ key, cert }, app).listen(environment.server.PORT);
-app.listen(environment.server.PORT, () => console.log(`Running a GraphQL API server at ${environment.server.PORT}`));
+if (!environment.server.PRODUCTION) {
+  const fs = require('fs');
+  const https = require('https');
+  const key = fs.readFileSync('localhost-key.pem', 'utf-8');
+  const cert = fs.readFileSync('localhost.pem', 'utf-8');
+
+  https.createServer({ key, cert }, app).listen(environment.server.PORT);
+} else {
+  app.listen(environment.server.PORT, () => console.log(`Running a GraphQL API server at ${environment.server.PORT}`));
+}
