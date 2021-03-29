@@ -72,7 +72,7 @@ app.get('/', (_req, res) => res.send({
 
 app.get('/config.json', (_req, res)  => res.send({
   domain: environment.auth0.DOMAIN,
-  clientId: environment.auth0.CLIENT_ID,
+  client_id: environment.auth0.CLIENT_ID,
   audience: environment.auth0.AUDIENCE,
   redirect_uri: environment.auth0.REDIRECT_URI,
 }));

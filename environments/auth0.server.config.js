@@ -6,5 +6,5 @@ module.exports = {
   /* END Auth0 Client */
   ALGORITHMS: process.env.AUTH0_SERVER_ALGORITHMS.split(','),
   ISSUER: process.env.AUTH0_SERVER_ISSUER,
-  JWKS_URI: process.env.AUTH0_SEVER_JWKS_URI,
+  JWKS_URI: process.env.AUTH0_SERVER_JWKS_URI,
 };
