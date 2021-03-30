@@ -71,7 +71,7 @@ app.get('/', (_req, res) => res.send({
   server: 'Hello World!'
 }));
 
-app.get('/config.json', (_req, res)  => res.send({
+app.get('/config.json', (_req, res) => res.send({
   domain: environment.auth0.DOMAIN,
   client_id: environment.auth0.CLIENT_ID,
   audience: environment.auth0.AUDIENCE,
@@ -149,7 +149,9 @@ if (!environment.server.PRODUCTION) {
   const key = fs.readFileSync('localhost-key.pem', 'utf-8');
   const cert = fs.readFileSync('localhost.pem', 'utf-8');
 
-  https.createServer({ key, cert }, app).listen(environment.server.PORT);
+  https.createServer({ key, cert }, app).listen(environment.server.PORT, '0.0.0.0', () => {
+    console.log(`Running a GraphQL API server at HTTPS:${environment.server.PORT}`)
+  });
 } else {
   app.listen(environment.server.PORT, () => console.log(`Running a GraphQL API server at ${environment.server.PORT}`));
 }
