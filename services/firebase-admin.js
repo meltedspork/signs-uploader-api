@@ -2,7 +2,7 @@ const firebaseAdmin = require('firebase-admin');
 const environment = require('../environments');
 
 firebaseAdmin.initializeApp({
-  credential: admin.credential.cert({
+  credential: firebaseAdmin.credential.cert({
     type: environment.firebaseAdmin.TYPE,
     project_id: environment.firebaseAdmin.PROJECT_ID,
     private_key_id: environment.firebaseAdmin.PRIVATE_KEY_ID,
