@@ -84,7 +84,7 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true,
 }));
 
-app.get('/test_db', (_req, res) => {
+app.get('/test_db', async (_req, res) => {
   try {
     await sequelize.authenticate();
     res.send({
