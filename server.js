@@ -16,6 +16,7 @@ const jwksRsa = require('jwks-rsa');
 var { graphqlHTTP } = require('express-graphql');
 var { buildSchema } = require('graphql');
 
+const sequelize = require('./services/sequelize');
 const firebaseAdmin = require('./services/firebase-admin');
 const firebase = require('./services/firebase');
 
@@ -83,30 +84,18 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true,
 }));
 
-app.get('/test_pg', (_req, res) => {
-  const { Client } = require('pg');
-
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false
-    }
-  });
-
-  client.connect();
-
-  let rows = [];
-  client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, resp) => {
-    if (err) throw err;
-    for (let row of resp.rows) {
-      rows.push(row);
-    }
-    client.end();
-  });
-
-  res.send({
-    rows,
-  });
+app.get('/test_db', (_req, res) => {
+  try {
+    await sequelize.authenticate();
+    res.send({
+      result: 'Connection has been established successfully.',
+    });
+  } catch (error) {
+    res.send({
+      result: 'Unable to connect to the database:',
+      error
+    });
+  }
 })
 
 app.get('/test', checkJwt, jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
