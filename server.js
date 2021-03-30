@@ -83,6 +83,32 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true,
 }));
 
+app.get('/test_pg', (_req, res) => {
+  const { Client } = require('pg');
+
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
+  });
+
+  client.connect();
+
+  let rows = [];
+  client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, resp) => {
+    if (err) throw err;
+    for (let row of resp.rows) {
+      rows.push(row);
+    }
+    client.end();
+  });
+
+  res.send({
+    rows,
+  });
+})
+
 app.get('/test', checkJwt, jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
   const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
   req.session.firebaseToken = firebaseToken;
@@ -117,7 +143,7 @@ app.get('/check', checkJwt, jwtAuthz(['read:signs'], {failWithError: true, check
   });
 });
 
-app.use('/signs', signsRouter);
+app.use('/signs', checkJwt, jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), signsRouter);
 
 app.use((err, req, res, next) => {
   if (err.name && err.name === 'UnauthorizedError') {

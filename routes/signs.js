@@ -14,6 +14,7 @@ router.post('/upload', async (req, res) => {
       return res.status(500).send({ msg: "file is not found" })
   }
 
+  console.log('req.files', req.files);
   const s3Uploaded = await s3Upload(req.files.file);
 
   return res.send({
