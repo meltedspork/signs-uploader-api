@@ -1,6 +1,7 @@
+const environment = require('../environments');
 const Sequelize = require('sequelize');
 
-sequelize = new Sequelize(process.env.DATABASE_URL, {
+const sequelize = new Sequelize(environment.server.DATABASE_URL, {
   dialect:  'postgres',
   dialectOptions: {
     ssl: {
