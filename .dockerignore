@@ -1,5 +1,6 @@
 .git
 .gitignore
+.travis.yml
 README.md
 docker-compose.yml
 node_modules

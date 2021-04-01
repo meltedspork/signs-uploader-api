@@ -2,20 +2,22 @@ version: '3.5'
 
 services:
   server:
+    container_name: server
     build: .
     volumes:
-      - ".:/src"
+      - .:/src
     ports:
       - "4000:4000"
-    links:
+    networks:
       - postgres
 
   postgres:
+    container_name: postgres
     image: postgres
     environment:
       POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres:/data/postgres
+      - postgres-db:/var/lib/postgresql/data/ 
     ports:
       - "5432:5432"
     networks:
@@ -23,6 +25,7 @@ services:
     restart: unless-stopped
 
   pg_admin:
+    container_name: pg_admin
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin@meltedspork.com 
@@ -39,5 +42,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres:
-  pgadmin:
+  postgres-db:

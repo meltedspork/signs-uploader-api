@@ -12,29 +12,14 @@ const jwt = require('express-jwt');
 const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
 
-// GraphQL deps
-var { graphqlHTTP } = require('express-graphql');
-var { buildSchema } = require('graphql');
+// GraphQL
+const graphql = require('./graphql');
 
 const sequelize = require('./services/sequelize');
 const firebaseAdmin = require('./services/firebase-admin');
 const firebase = require('./services/firebase');
 
 const signsRouter = require('./routes/signs');
-
-// Construct a schema, using GraphQL schema language
-var schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`);
- 
-// The root provides a resolver function for each API endpoint
-var root = {
-  hello: () => {
-    return 'Hello world!';
-  },
-};
  
 var app = express();
 app.set('trust proxy', 'loopback');
@@ -78,11 +63,8 @@ app.get('/config.json', (_req, res) => res.send({
   redirect_uri: environment.auth0.REDIRECT_URI,
 }));
 
-app.use('/graphql', graphqlHTTP({
-  schema: schema,
-  rootValue: root,
-  graphiql: true,
-}));
+// The GraphQL endpoint
+graphql.applyMiddleware({ app });
 
 app.get('/test_db', async (_req, res) => {
   try {
@@ -114,13 +96,24 @@ const getData = async () => {
 }
 
 app.get('/check', checkJwt, jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
+  console.log('--=================================')
+  console.log('--=================================')
+  console.log('--=================================')
+  console.log('--=================================')
+  console.log('--=================================')
+  console.log('--=================================')
+  console.log(req.user)
+  console.log(req.session)
+  console.log(req.session.firebaseToken)
+  console.log('||=================================')
+
   let docs = []
   try {
     const signedIn = await firebase.auth().signInWithCustomToken(req.session.firebaseToken);
-    console.log('signedIn:::', signedIn);
+    console.log('signedIn:::');
     docs = await getData();
     const signedOut = await firebase.auth().signOut();
-    console.log('signedOut:::', signedOut);
+    console.log('signedOut:::');
   } catch (error) {
     console.error('Something went wrong:', error);
     docs = error;

@@ -1,14 +1,24 @@
 const environment = require('../environments');
 const Sequelize = require('sequelize');
+const sequelizeConfigs = require(__dirname + '/../config/config');
 
-const sequelize = new Sequelize(environment.server.DATABASE_URL, {
-  dialect:  'postgres',
-  dialectOptions: {
-    ssl: {
-      rejectUnauthorized: false,
-    }
-  },
-  protocol: 'postgres',
-});
+const nodeEnv = environment.server.NODE_ENV || 'development';
 
-module.exports = sequelize;
+const sequelize = new Sequelize(
+  environment.server.DATABASE_URL,
+  sequelizeConfigs[nodeEnv],
+);
+
+(async() => {
+  try {
+    await sequelize.authenticate();
+    console.log('@!@!@!@! Sequelize authenticate has been established successfully.');
+  } catch (error) {
+    console.log('@!@!@!@! Unable to authenticate to the database:', error);
+  }
+})();
+
+module.exports = {
+  sequelize,
+  Sequelize,
+};
