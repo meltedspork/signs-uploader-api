@@ -1,21 +1,14 @@
 
 const GraphQLUUID = require('graphql-type-uuid');
 
-// const resolvers = {
-//   Query: {
-//     hello: () => 'Hello world!',
-//   },
-// };
-
 const resolvers = {
   UUID: GraphQLUUID,
   Query: {
-    async user (root, { id }, { models }) {
-      return models.User.findById(id);
+    async sign (_root, { uid } , { models }) {
+      return models.Sign.findOne({ where: { uid }});
     },
-    async allUsers (root, args, { models }) {
-      console.log(models.User);
-      return models.User.findAll();
+    async allSigns (_root, _args, { models }) {
+      return models.Sign.findAll();
     },
   },
 }

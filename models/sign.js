@@ -32,8 +32,13 @@ module.exports = (sequelize) => {
       ],
     },
   }, {
+    indexes: [{
+      unique: true,
+      fields: ['uid'],
+    }],
     sequelize,
     modelName: 'Sign',
+    tableName: 'Signs',
   });
   return Sign;
 };

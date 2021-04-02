@@ -3,17 +3,18 @@ const { gql } = require('apollo-server-express');
 const typeDefs = gql`
   scalar UUID
 
-  type User {
+  type Sign {
     uid: UUID!
-    idProviderUserId: String!
-    email: String!
+    title: String!
+    pronounce: String!
+    definition: String!
+    state: String!
   }
 
   type Query {
-    user(id: Int!): User
-    allUsers: [User!]!
+    sign(uid: UUID!): Sign
+    allSigns: [Sign!]!
   }
-
 `;
 
 module.exports = typeDefs;

@@ -17,7 +17,7 @@ module.exports = (sequelize) => {
       defaultValue: () => uuidv4(),
       unique: true,
     },
-    id_provider_user_id: {
+    idProviderUserId: {
       type: DataTypes.STRING,
       unique: true,
     },
@@ -26,8 +26,13 @@ module.exports = (sequelize) => {
       unique: true,
     }
   }, {
+    indexes: [{
+      unique: true,
+      fields: ['uid', 'id_provider_user_id'],
+    }],
     sequelize,
     modelName: 'User',
+    tableName: 'Users',
   });
   return User;
 };
