@@ -11,6 +11,20 @@ const resolvers = {
       return models.Sign.findAll();
     },
   },
+  Mutation: {
+    async addSign (_root, args, { models }) {
+      const {
+        title,
+        pronounce,
+        definition,
+      } = args;
+      return models.Sign.create({
+        title,
+        pronounce,
+        definition,
+      })
+    }
+  }
 }
 
 module.exports = resolvers;

@@ -15,6 +15,10 @@ const typeDefs = gql`
     sign(uid: UUID!): Sign
     allSigns: [Sign!]!
   }
+
+  type Mutation {
+    addSign(title: String, pronounce: String, definition: String): Sign
+  }
 `;
 
 module.exports = typeDefs;
