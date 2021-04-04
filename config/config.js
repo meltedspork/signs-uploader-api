@@ -1,13 +1,11 @@
-const environment = require('../environments');
+require('dotenv').config();
 
 const defaultOptions = {
-  url: environment.server.DATABASE_URL,
+  url: process.env.DATABASE_URL,
   dialect:  'postgres',
   protocol: 'postgres',
   define: {
     underscored: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
   },
 }
 

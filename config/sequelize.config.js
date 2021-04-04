@@ -1,11 +1,11 @@
-const environment = require('../environments');
+require('dotenv').config();
 const Sequelize = require('sequelize');
 const sequelizeConfigs = require(__dirname + '/../config/config');
 
-const nodeEnv = environment.server.NODE_ENV || 'development';
+const nodeEnv = process.env.NODE_ENV || 'development';
 
 const sequelize = new Sequelize(
-  environment.server.DATABASE_URL,
+  process.env.DATABASE_URL,
   sequelizeConfigs[nodeEnv],
 );
 

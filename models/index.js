@@ -1,7 +1,7 @@
 const {
   sequelize,
   Sequelize,
-} = require('../services/sequelize');
+} = require('../config/sequelize.config');
 
 const SignModel = require('./sign');
 const UserModel = require('./user');

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { upload: s3Upload } = require('../services/aws');
+const { upload: s3Upload } = require('../services/aws.s3');
 
 router.get('/', (req, res) => {
   res.send({

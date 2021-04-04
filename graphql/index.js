@@ -6,7 +6,10 @@ const models = require('../models');
 const graphql = new ApolloServer({
   typeDefs,
   resolvers,
-  context: { models },
+  context: ({ req }) => ({
+    models,
+    user: req.user,
+  }),
 });
 
 module.exports = graphql;

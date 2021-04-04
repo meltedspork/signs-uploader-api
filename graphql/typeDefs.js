@@ -17,7 +17,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    addSign(title: String, pronounce: String, definition: String): Sign
+    createSign(title: String, pronounce: String, definition: String): Sign
   }
 `;
 

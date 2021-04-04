@@ -1,4 +1,4 @@
-const environment = require('./environments');
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
@@ -14,10 +14,10 @@ const jwksRsa = require('jwks-rsa');
 
 // GraphQL
 const graphql = require('./graphql');
+const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
 
-const sequelize = require('./services/sequelize');
-const firebaseAdmin = require('./services/firebase-admin');
-const firebase = require('./services/firebase');
+const firebaseAdmin = require('./config/firebase-admin.config');
+const firebase = require('./config/firebase.config');
 
 const signsRouter = require('./routes/signs');
  
@@ -26,15 +26,15 @@ app.set('trust proxy', 'loopback');
 app.use(fileUpload());
 app.use(cors({
   credentials: true,
-  origin: environment.server.ORIGINS,
+  origin: process.env.ORIGINS.split(','),
 }));
 
 app.use(expressSession({
   store: new FirebaseStore({
     database: firebaseAdmin.database(),
   }),
-  name: environment.session.NAME,
-  secret: environment.session.SECRET,
+  name: process.env.SESSION_NAME,
+  secret: process.env.SESSION_SECRET,
   resave: true,
   saveUninitialized: true,
   secure: true,
@@ -45,11 +45,11 @@ const checkJwt = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: environment.auth0Server.JWKS_URI,
+    jwksUri: process.env.AUTH0_SERVER_JWKS_URI,
   }),
-  audience: environment.auth0Server.AUDIENCE,
-  issuer: environment.auth0Server.ISSUER,
-  algorithms: environment.auth0Server.ALGORITHMS,
+  audience: process.env.AUTH0_CLIENT_AUDIENCE,
+  issuer: process.env.AUTH0_SERVER_ISSUER,
+  algorithms: process.env.AUTH0_SERVER_ALGORITHMS.split(','),
 });
 
 app.get('/', (_req, res) => res.send({
@@ -57,30 +57,16 @@ app.get('/', (_req, res) => res.send({
 }));
 
 app.get('/config.json', (_req, res) => res.send({
-  domain: environment.auth0.DOMAIN,
-  client_id: environment.auth0.CLIENT_ID,
-  audience: environment.auth0.AUDIENCE,
-  redirect_uri: environment.auth0.REDIRECT_URI,
+  audience: process.env.AUTH0_CLIENT_AUDIENCE,
+  client_id: process.env.AUTH0_CLIENT_CLIENT_ID,
+  domain: process.env.AUTH0_CLIENT_DOMAIN,
+  redirect_uri: process.env.AUTH0_CLIENT_REDIRECT_URI,
 }));
 
-// The GraphQL endpoint
+app.use(unlessGraphqliAndIsNonProduction(checkJwt));
 graphql.applyMiddleware({ app });
 
-app.get('/test_db', async (_req, res) => {
-  try {
-    await sequelize.authenticate();
-    res.send({
-      result: 'Connection has been established successfully.',
-    });
-  } catch (error) {
-    res.send({
-      result: 'Unable to connect to the database:',
-      error
-    });
-  }
-})
-
-app.get('/test', checkJwt, jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
+app.get('/test', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
   const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
   req.session.firebaseToken = firebaseToken;
 
@@ -95,7 +81,7 @@ const getData = async () => {
   return snapshot.docs.map(doc => doc.data());
 }
 
-app.get('/check', checkJwt, jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
+app.get('/check', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
   console.log('--=================================')
   console.log('--=================================')
   console.log('--=================================')
@@ -125,7 +111,7 @@ app.get('/check', checkJwt, jwtAuthz(['read:signs'], {failWithError: true, check
   });
 });
 
-app.use('/signs', checkJwt, jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), signsRouter);
+app.use('/signs', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), signsRouter);
 
 app.use((err, req, res, next) => {
   if (err.name && err.name === 'UnauthorizedError') {
@@ -136,15 +122,15 @@ app.use((err, req, res, next) => {
   next(err, req, res);
 });
 
-if (!environment.server.PRODUCTION) {
+if (process.env.NODE_ENV !== 'production') {
   const fs = require('fs');
   const https = require('https');
   const key = fs.readFileSync('localhost-key.pem', 'utf-8');
   const cert = fs.readFileSync('localhost.pem', 'utf-8');
 
-  https.createServer({ key, cert }, app).listen(environment.server.PORT, '0.0.0.0', () => {
-    console.log(`Running a GraphQL API server at HTTPS:${environment.server.PORT}`)
+  https.createServer({ key, cert }, app).listen(process.env.PORT, '0.0.0.0', () => {
+    console.log(`Running a GraphQL API server at HTTPS:${process.env.PORT}`)
   });
 } else {
-  app.listen(environment.server.PORT, () => console.log(`Running a GraphQL API server at ${environment.server.PORT}`));
+  app.listen(process.env.PORT, () => console.log(`Running a GraphQL API server at ${process.env.PORT}`));
 }
