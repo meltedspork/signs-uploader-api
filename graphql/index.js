@@ -1,5 +1,5 @@
 const { ApolloServer } = require('apollo-server-express');
-const typeDefs = require('./typeDefs');
+const typeDefs = require('./type-defs');
 const resolvers = require('./resolvers');
 const models = require('../models');
 
