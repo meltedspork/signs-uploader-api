@@ -1,4 +1,4 @@
-const signMutations = require('./sign.mutations');
+const signMutations = require('./sign');
 
 const Mutation = {
   ...signMutations,

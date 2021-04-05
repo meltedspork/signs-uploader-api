@@ -1,6 +1,6 @@
 const GraphQLUUID = require('graphql-type-uuid');
-const Query = require('./query-resolvers');
-const Mutation = require('./mutation-resolvers');
+const Query = require('./queries');
+const Mutation = require('./mutations');
 
 const resolvers = {
   UUID: GraphQLUUID,

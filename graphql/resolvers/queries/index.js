@@ -1,4 +1,4 @@
-const signQueries = require('./sign.queries');
+const signQueries = require('./sign');
 
 const Query = {
   ...signQueries,
