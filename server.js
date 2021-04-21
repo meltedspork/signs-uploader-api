@@ -2,7 +2,6 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const fileUpload = require('express-fileupload');
 
 const expressSession = require('express-session');
 const FirebaseStore = require('connect-session-firebase')(expressSession);
@@ -13,21 +12,24 @@ const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
 
 // GraphQL
+const { graphqlHTTP } = require('express-graphql');
 const graphql = require('./graphql');
+const { graphqlUploadExpress } = require('graphql-upload');
 const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
+
+const models = require('./models');
 
 const firebaseAdmin = require('./config/firebase-admin.config');
 const firebase = require('./config/firebase.config');
-
-const signsRouter = require('./routes/signs');
  
 var app = express();
 app.set('trust proxy', 'loopback');
-app.use(fileUpload());
 app.use(cors({
   credentials: true,
   origin: process.env.ORIGINS.split(','),
 }));
+app.use(express.json({limit: '25mb'}));
+app.use(express.urlencoded({limit: '25mb'}));
 
 app.use(expressSession({
   store: new FirebaseStore({
@@ -64,13 +66,27 @@ app.get('/config.json', (_req, res) => res.send({
 }));
 
 app.use(unlessGraphqliAndIsNonProduction(checkJwt));
-graphql.applyMiddleware({ app });
+
+app.use(
+  '/graphql',
+  graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
+  graphqlHTTP((req, res, graphQLParams) => {
+    return {
+      schema: graphql,
+      graphiql: (process.env.NODE_ENV !== 'production'),
+      context: {
+        models: models,
+        user: req.user,
+      },
+      uploads: false,
+    }
+  }),
+);
 
 app.get('/test', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
   const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
   req.session.firebaseToken = firebaseToken;
 
-  console.log(req.session)
   res.send({
     firebaseToken,
   });
@@ -95,10 +111,10 @@ app.get('/check', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes:
 
   let docs = []
   try {
-    const signedIn = await firebase.auth().signInWithCustomToken(req.session.firebaseToken);
+    await firebase.auth().signInWithCustomToken(req.session.firebaseToken);
     console.log('signedIn:::');
     docs = await getData();
-    const signedOut = await firebase.auth().signOut();
+    await firebase.auth().signOut();
     console.log('signedOut:::');
   } catch (error) {
     console.error('Something went wrong:', error);
@@ -111,14 +127,13 @@ app.get('/check', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes:
   });
 });
 
-app.use('/signs', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), signsRouter);
-
 app.use((err, req, res, next) => {
   if (err.name && err.name === 'UnauthorizedError') {
     return res.status(401).send({error: 'Invalid token'});
   } else if (err.message && err.message === 'Insufficient scope') {
     return res.status(403).send({error: 'Insufficient permission'});
   }
+
   next(err, req, res);
 });
 

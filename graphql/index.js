@@ -1,15 +1,10 @@
-const { ApolloServer } = require('apollo-server-express');
+const { makeExecutableSchema } = require('graphql-tools');
 const typeDefs = require('./type-defs');
 const resolvers = require('./resolvers');
-const models = require('../models');
 
-const graphql = new ApolloServer({
+const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
-  context: ({ req }) => ({
-    models,
-    user: req.user,
-  }),
 });
 
-module.exports = graphql;
+module.exports = schema;

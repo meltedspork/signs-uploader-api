@@ -1,11 +1,23 @@
+const { signUrl } = require('../../../services/aws');
 const signQueries = {
-  async sign (_root, { uid } , /*{ models }*/ context) {
-    const { models } = context;
-    return models.Sign.findOne({ where: { uid }});
+  async sign (_root, { uid }, { models }) {
+    const {
+      title,
+      pronounce,
+      definition,
+      state,
+    } = models.Sign.findOne({ where: { uid }});
+    const signGifUrl = signUrl(`${uid}_Video.gif`);
+
+    return {
+      title,
+      pronounce,
+      definition,
+      state,
+      signGifUrl,
+    }
   },
-  async allSigns (_root, _args, /*{ models }*/ context) {
-    //console.log('context', context);
-    const { models, user } = context;
+  async allSigns (_root, _args, { models, user }) {
     const { sub: idProviderUserId } = user;
     const foundUser = await models.User.findOne({
       where: {
@@ -13,7 +25,7 @@ const signQueries = {
       },
     });
 
-    console.log('USER!!!!>>>>>>>>>>>', foundUser);
+    // console.log('USER!!!!>>>>>>>>>>>', foundUser);
     return models.Sign.findAll();
   },
 }

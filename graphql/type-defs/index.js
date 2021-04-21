@@ -4,6 +4,7 @@ const queryTypeDefs = require('./query');
 const mutationTypeDefs = require('./mutation');
 
 const typeDefs = gql`
+  scalar Upload
   scalar UUID
 
   ${signTypeDefs}

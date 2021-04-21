@@ -10,6 +10,7 @@ AWS.config.update({
 });
 
 const s3 = new AWS.S3();
+
 module.exports = {
   S3_BUCKET_INPUT,
   s3,
