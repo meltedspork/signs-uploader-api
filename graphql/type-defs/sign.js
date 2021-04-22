@@ -1,10 +1,11 @@
 const signTypeDefs = `
 type Sign {
-  title: String!
-  pronounce: String!
-  definition: String!
-  state: String!
-  signGifUrl: String!
+  uid: UUID!
+  title: String
+  pronounce: String
+  definition: String
+  state: String
+  videoUrl: String
 }
 `;
 

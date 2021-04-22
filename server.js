@@ -65,23 +65,47 @@ app.get('/config.json', (_req, res) => res.send({
   redirect_uri: process.env.AUTH0_CLIENT_REDIRECT_URI,
 }));
 
-app.use(unlessGraphqliAndIsNonProduction(checkJwt));
 
-app.use(
-  '/graphql',
-  graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
-  graphqlHTTP((req, res, graphQLParams) => {
-    return {
-      schema: graphql,
-      graphiql: (process.env.NODE_ENV !== 'production'),
-      context: {
-        models: models,
-        user: req.user,
-      },
-      uploads: false,
-    }
-  }),
-);
+if (process.env.NODE_ENV === 'production') {
+  app.post(
+    '/graphql',
+    checkJwt,
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
+    graphqlHTTP((req, res, graphQLParams) => {
+      console.log('graphQLParams ---->>>>_____', graphQLParams);
+  
+      return {
+        schema: graphql,
+        graphiql: false,
+        context: {
+          models: models,
+          user: req.user,
+        },
+        uploads: false,
+      }
+    }),
+  );
+} else {
+  app.use(
+    '/graphql',
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
+    graphqlHTTP((req, res, graphQLParams) => {
+      console.log('graphQLParams ---->>>>_____', graphQLParams);
+
+      return {
+        schema: graphql,
+        graphiql: true,
+        context: {
+          models: models,
+          user: req.user,
+        },
+        uploads: false,
+      }
+    }),
+  );
+}
+
+app.use(checkJwt);
 
 app.get('/test', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
   const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
@@ -137,7 +161,9 @@ app.use((err, req, res, next) => {
   next(err, req, res);
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'production') {
+  app.listen(process.env.PORT, () => console.log(`Running a GraphQL API server at ${process.env.PORT}`));
+} else {
   const fs = require('fs');
   const https = require('https');
   const key = fs.readFileSync('localhost-key.pem', 'utf-8');
@@ -146,6 +172,4 @@ if (process.env.NODE_ENV !== 'production') {
   https.createServer({ key, cert }, app).listen(process.env.PORT, '0.0.0.0', () => {
     console.log(`Running a GraphQL API server at HTTPS:${process.env.PORT}`)
   });
-} else {
-  app.listen(process.env.PORT, () => console.log(`Running a GraphQL API server at ${process.env.PORT}`));
 }

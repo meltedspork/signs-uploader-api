@@ -1,6 +1,6 @@
 const queryTypeDefs = `
 type Query {
-  sign(uid: UUID!): Sign
+  viewSign(uid: UUID!): Sign
   allSigns: [Sign!]!
 }
 `;

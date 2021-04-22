@@ -5,20 +5,17 @@ module.exports = (middleware) => {
     const {
       headers: {
         authorization,
-        host,
         referer,
       },
       method,
-      path,
     } = req;
     const [authType, authToken] = (authorization || '').split(' ');
-    const [_, referred] = (referer || '').split('://');
 
-    if (process.env.NODE_ENV !== 'production' && path === '/graphql' && host === process.env.HOST) {
+    if (process.env.NODE_ENV !== 'production') {
       if (method === 'GET' && !referer) {
         return next();
 
-      } else if (method === 'POST' && authType === 'User' && referred === `${process.env.HOST}/graphql`) {
+      } else if (method === 'POST' && authType === 'User') {
         const { idProviderUserId } = await User.findOne({
           where: {
             uid: authToken,
