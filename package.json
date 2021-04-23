@@ -8,7 +8,8 @@
     "ps": "heroku ps -a signs-uploader-api",
     "dev": "nodemon server.js",
     "db:migrate": "npx sequelize db:migrate",
-    "start": "npm run db:migrate && node server.js",
+    "start": "node server.js",
+    "prestart": "npm run db:migrate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
