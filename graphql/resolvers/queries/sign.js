@@ -20,19 +20,20 @@ const signQueries = {
       definition,
       state,
       videoUrl,
-    }
+    };
   },
   async allSigns (_root, _args, { models, user }) {
-    const { sub: idProviderUserId } = user;
-    const foundUser = await models.User.findOne({
-      where: {
-        idProviderUserId
-      },
-    });
+    console.log('__!!!@@--___----__________ user', user);
+    //const { sub: idProviderUserId } = user;
+    // const foundUser = await models.User.findOne({
+    //   where: {
+    //     idProviderUserId
+    //   },
+    // });
 
     // console.log('USER!!!!>>>>>>>>>>>', foundUser);
     return models.Sign.findAll();
   },
-}
+};
 
 module.exports = signQueries;

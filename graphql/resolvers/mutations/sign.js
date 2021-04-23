@@ -1,7 +1,7 @@
 const { uploadToBucket } = require('../../../services/aws');
 
 const signMutations = {
-  async createSign (_root, args, { models }) {
+  async createSign (_root, args, { models, user }) {
     const {
       videoFile,
       title,
@@ -10,7 +10,7 @@ const signMutations = {
     } = args;
     console.log('!!!!!!!!!!!!!!!', args);
     console.log('videoFilevideoFilevideoFile', videoFile);
-
+    console.log('useruseruseruseruseruser', user);
     const {
       filename,
       createReadStream,
@@ -21,12 +21,14 @@ const signMutations = {
 
     const uploadedToBucket = await uploadToBucket(filed, filename);
     console.log('uploadedToBucket _______>', uploadedToBucket);
+    // const creator = models.User.findOne({ where: {  }})
     return models.Sign.create({
       title,
       pronounce,
       definition,
+      // creator,
     });
   }
-}
+};
 
 module.exports = signMutations;

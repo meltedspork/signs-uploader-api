@@ -8,9 +8,10 @@
     "psql": "heroku pg:psql -a signs-uploader-api",
     "ps": "heroku ps -a signs-uploader-api",
     "dev": "nodemon server.js",
-    "db:migrate": "npx sequelize db:migrate",
+    "db:migrate": "sequelize db:migrate",
     "start": "node server.js",
     "heroku-prebuild": "npm run db:migrate",
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -40,6 +41,7 @@
     "xstate": "^4.17.0"
   },
   "devDependencies": {
+    "eslint": "^7.25.0",
     "nodemon": "^2.0.7",
     "sequelize-cli": "^6.2.0"
   },

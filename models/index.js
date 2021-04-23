@@ -5,14 +5,16 @@ const {
 
 const SignModel = require('./sign');
 const UserModel = require('./user');
+const VideoModel = require('./video');
 
 const models = {
   Sign: SignModel(sequelize),
   User: UserModel(sequelize),
+  Vide: VideoModel(sequelize),
 };
 
 Object.values(models)
-  .filter(model => typeof model.associate === "function")
+  .filter(model => typeof model.associate === 'function')
   .forEach(model => model.associate(models));
 
 const db = {

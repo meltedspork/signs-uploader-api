@@ -10,13 +10,13 @@ const uploadToBucket = async (fileReadStream, fileName) => {
     Key: fileNameUnique,
     Body: fileReadStream, 
   }).promise();
-}
+};
 
 const signUrl = (fileName) => {
   // 2 days as milliseconds to use for link expiration
   const twoDays = 2*24*60*60*1000;
   // Unix UTC timestamp for now + 2 days
-  const expires = Math.floor((Date.now() + twoDays)/1000)
+  const expires = Math.floor((Date.now() + twoDays)/1000);
 
   // sign a CloudFront URL that expires 2 days from now
   return cloudFrontSigner.getSignedUrl({

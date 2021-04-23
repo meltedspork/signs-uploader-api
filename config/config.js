@@ -7,7 +7,7 @@ const defaultOptions = {
   define: {
     underscored: true,
   },
-}
+};
 
 module.exports = {
   development: defaultOptions,

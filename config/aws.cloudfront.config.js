@@ -8,7 +8,7 @@ const CLOUDFRONT_BASE_URL = process.env.AWS_CLOUDFRONT_BASE_URL;
 const cloudFrontSigner = new AWS.CloudFront.Signer(
   CLOUDFRONT_ACCESS_KEY_ID,
   CLOUDFRONT_PRIVATE_KEY,
-)
+);
 
 module.exports = {
   CLOUDFRONT_BASE_URL,

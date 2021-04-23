@@ -7,9 +7,15 @@ const { v4: uuidv4 } = require('uuid');
 module.exports = (sequelize) => {
   class User extends Model {
     static associate(models) {
-      //this.sign = models.User.belongsTo(models.Sign);
+      this.uploadedSign = models.User.hasMany(models.Sign, {
+        as: 'uploadedSign',
+      });
     }
-  };
+
+    // findByIdpUserId(idProviderUserId) {
+    // }
+  }
+
   User.init({
     uid: {
       allowNull: false,

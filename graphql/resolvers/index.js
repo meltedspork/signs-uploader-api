@@ -8,6 +8,6 @@ const resolvers = {
   UUID: GraphQLUUID,
   Query,
   Mutation,
-}
+};
 
 module.exports = resolvers;

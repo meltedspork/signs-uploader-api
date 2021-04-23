@@ -15,7 +15,7 @@ const jwksRsa = require('jwks-rsa');
 const { graphqlHTTP } = require('express-graphql');
 const graphql = require('./graphql');
 const { graphqlUploadExpress } = require('graphql-upload');
-const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
+// const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
 
 const { sequelize } = require('./config/sequelize.config');
 const models = require('./models');
@@ -73,7 +73,7 @@ if (process.env.NODE_ENV === 'production') {
     graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
     graphqlHTTP((req, res, graphQLParams) => {
       console.log('graphQLParams ---->>>>_____', graphQLParams);
-  
+      console.log('useruseruseruseruseruser', req.user);
       return {
         schema: graphql,
         graphiql: false,
@@ -82,7 +82,7 @@ if (process.env.NODE_ENV === 'production') {
           user: req.user,
         },
         uploads: false,
-      }
+      };
     }),
   );
 } else {
@@ -100,7 +100,7 @@ if (process.env.NODE_ENV === 'production') {
           user: req.user,
         },
         uploads: false,
-      }
+      };
     }),
   );
 }
@@ -108,7 +108,7 @@ if (process.env.NODE_ENV === 'production') {
 app.get('/test_db', async (_req, res) => {
   let authenticateObject = {
     env: process.env.NODE_ENV,
-  }
+  };
 
   try {
     await sequelize.authenticate();
@@ -137,23 +137,23 @@ app.get('/test_jwt', jwtAuthz(['read:signs'], {failWithError: true, checkAllScop
 });
 
 const getData = async () => {
-  const snapshot = await firebase.firestore().collection('foobars').get()
+  const snapshot = await firebase.firestore().collection('foobars').get();
   return snapshot.docs.map(doc => doc.data());
-}
+};
 
 app.get('/check', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
-  console.log('--=================================')
-  console.log('--=================================')
-  console.log('--=================================')
-  console.log('--=================================')
-  console.log('--=================================')
-  console.log('--=================================')
-  console.log(req.user)
-  console.log(req.session)
-  console.log(req.session.firebaseToken)
-  console.log('||=================================')
+  console.log('--=================================');
+  console.log('--=================================');
+  console.log('--=================================');
+  console.log('--=================================');
+  console.log('--=================================');
+  console.log('--=================================');
+  console.log(req.user);
+  console.log(req.session);
+  console.log(req.session.firebaseToken);
+  console.log('||=================================');
 
-  let docs = []
+  let docs = [];
   try {
     await firebase.auth().signInWithCustomToken(req.session.firebaseToken);
     console.log('signedIn:::');
@@ -190,6 +190,6 @@ if (process.env.NODE_ENV === 'production') {
   const cert = fs.readFileSync('localhost.pem', 'utf-8');
 
   https.createServer({ key, cert }, app).listen(process.env.PORT, '0.0.0.0', () => {
-    console.log(`Running a GraphQL API server at HTTPS:${process.env.PORT}`)
+    console.log(`Running a GraphQL API server at HTTPS:${process.env.PORT}`);
   });
 }

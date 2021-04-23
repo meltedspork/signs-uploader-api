@@ -5,14 +5,17 @@ const {
 const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize) => {
-  class Sign extends Model {
+  class Video extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
     static associate(models) {
-      this.creator = models.Sign.hasOne(models.User, {
-        as: 'creator'
-      });
+      // define association here
     }
-  }
-  Sign.init({
+  };
+  Video.init({
     uid: {
       allowNull: false,
       type: DataTypes.UUID,
@@ -23,28 +26,20 @@ module.exports = (sequelize) => {
       allowNull: false,
       type: DataTypes.STRING,
     },
-    pronounce: DataTypes.STRING,
-    definition: DataTypes.TEXT,
+    file_name: {
+      allowNull: false,
+      type: DataTypes.STRING,
+    },
     user_id: {
       allowNull: false,
       type: DataTypes.INTEGER,
     },
-    state: {
-      type: DataTypes.ENUM,
-      values: [
-        'created',
-        'drafted',
-        'published',
-      ],
-    },
+    metadata: {
+      allowNull: false,
+      type: DataTypes.JSONB,
   }, {
-    indexes: [{
-      unique: true,
-      fields: ['uid'],
-    }],
     sequelize,
-    modelName: 'Sign',
-    tableName: 'Signs',
+    modelName: 'Video',
   });
-  return Sign;
+  return Video;
 };
