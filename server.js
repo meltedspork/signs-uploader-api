@@ -106,22 +106,23 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.get('/test_db', async (_req, res) => {
+  let authenticateObject = {
+    env: process.env.NODE_ENV,
+  }
+
   try {
     await sequelize.authenticate();
-    res.send({
-      env: process.env.NODE_ENV,
+    Object.assign(authenticateObject, {
       connect: true,
-      message: 'Sequelize authenticate has been established successfully',
-      error: null
-    }); 
+    });
   } catch (error) {
-    res.send({
-      env: process.env.NODE_ENV,
+    Object.assign(authenticateObject, {
       connect: false,
-      message: 'Unable to authenticate to the database',
       error,
     });
   }
+
+  res.send(authenticateObject);
 });
 
 app.use(checkJwt);
