@@ -65,7 +65,6 @@ app.get('/config.json', (_req, res) => res.send({
   redirect_uri: process.env.AUTH0_CLIENT_REDIRECT_URI,
 }));
 
-
 if (process.env.NODE_ENV === 'production') {
   app.post(
     '/graphql',
@@ -105,9 +104,28 @@ if (process.env.NODE_ENV === 'production') {
   );
 }
 
+app.get('/test_db', async (_req, res) => {
+  try {
+    await sequelize.authenticate();
+    res.send({
+      env: process.env.NODE_ENV,
+      connect: true,
+      message: 'Sequelize authenticate has been established successfully',
+      error: null
+    }); 
+  } catch (error) {
+    res.send({
+      env: process.env.NODE_ENV,
+      connect: false,
+      message: 'Unable to authenticate to the database',
+      error,
+    });
+  }
+});
+
 app.use(checkJwt);
 
-app.get('/test', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
+app.get('/test_jwt', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
   const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
   req.session.firebaseToken = firebaseToken;
 
