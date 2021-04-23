@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "bash": "docker-compose exec server bash",
+    "psql": "heroku pg:psql -a signs-uploader-api",
     "ps": "heroku ps -a signs-uploader-api",
     "dev": "nodemon server.js",
     "db:migrate": "npx sequelize db:migrate",
