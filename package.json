@@ -9,7 +9,7 @@
     "dev": "nodemon server.js",
     "db:migrate": "npx sequelize db:migrate",
     "start": "node server.js",
-    "prestart": "npm run db:migrate",
+    "heroku-prebuild": "npm run db:migrate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

@@ -17,6 +17,7 @@ const graphql = require('./graphql');
 const { graphqlUploadExpress } = require('graphql-upload');
 const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
 
+const { sequelize } = require('./config/sequelize.config');
 const models = require('./models');
 
 const firebaseAdmin = require('./config/firebase-admin.config');
