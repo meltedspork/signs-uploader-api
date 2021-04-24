@@ -9,6 +9,7 @@ module.exports = (sequelize) => {
     static associate(models) {
       this.uploadedSign = models.User.hasMany(models.Sign, {
         as: 'uploadedSign',
+        foreignKey: 'id',
       });
     }
 

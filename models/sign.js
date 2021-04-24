@@ -8,7 +8,8 @@ module.exports = (sequelize) => {
   class Sign extends Model {
     static associate(models) {
       this.creator = models.Sign.hasOne(models.User, {
-        as: 'creator'
+        as: 'creator',
+        foreignKey: 'id',
       });
     }
   }

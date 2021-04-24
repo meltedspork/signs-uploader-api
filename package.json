@@ -7,9 +7,11 @@
     "bash": "docker-compose exec server bash",
     "psql": "heroku pg:psql -a signs-uploader-api",
     "ps": "heroku ps -a signs-uploader-api",
-    "dev": "nodemon server.js",
+    "dev": "docker-compose down && docker-compose",
+    "dev:reset": "docker-compose down && docker-compose up --build",
     "db:migrate": "sequelize db:migrate",
     "start": "node server.js",
+    "start:dev": "nodemon server.js",
     "heroku-prebuild": "npm run db:migrate",
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
