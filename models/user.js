@@ -7,10 +7,13 @@ const { v4: uuidv4 } = require('uuid');
 module.exports = (sequelize) => {
   class User extends Model {
     static associate(models) {
-      this.uploadedSign = models.User.hasMany(models.Sign, {
-        as: 'uploadedSign',
-        foreignKey: 'id',
-      });
+      User.hasMany(models.Sign, {
+        as: 'signs',
+      })
+      // this.uploadedSign = models.User.hasMany(models.Sign, {
+      //   as: 'uploadedSign',
+      //   foreignKey: 'id',
+      // });
     }
 
     // findByIdpUserId(idProviderUserId) {
@@ -28,6 +31,7 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       unique: true,
     },
+    nickname: DataTypes.STRING,
     email: {
       type: DataTypes.STRING,
       unique: true,

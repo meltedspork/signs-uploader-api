@@ -24,18 +24,18 @@ services:
       - postgres
     restart: unless-stopped
 
-  pg_admin:
-    container_name: pg_admin
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin@meltedspork.com 
-      PGADMIN_DEFAULT_PASSWORD: postgres
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    ports:
-      - "3001:80"
-    networks:
-      - postgres
-    restart: unless-stopped
+  # pg_admin:
+  #   container_name: pg_admin
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: pgadmin@meltedspork.com 
+  #     PGADMIN_DEFAULT_PASSWORD: postgres
+  #     PGADMIN_CONFIG_SERVER_MODE: 'False'
+  #   ports:
+  #     - "3001:80"
+  #   networks:
+  #     - postgres
+  #   restart: unless-stopped
 
 networks:
   postgres:

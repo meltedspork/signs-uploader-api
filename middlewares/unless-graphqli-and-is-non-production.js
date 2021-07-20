@@ -11,20 +11,18 @@ module.exports = (middleware) => {
     } = req;
     const [authType, authToken] = (authorization || '').split(' ');
 
-    if (process.env.NODE_ENV !== 'production') {
-      if (method === 'GET' && !referer) {
-        return next();
+    if (method === 'GET' && !referer) {
+      return next();
 
-      } else if (method === 'POST' && authType === 'User') {
-        const { idProviderUserId } = await User.findOne({
-          where: {
-            uid: authToken,
-          },
-        });
+    } else if (method === 'POST' && authType === 'User') {
+      const { idProviderUserId } = await User.findOne({
+        where: {
+          uid: authToken,
+        },
+      });
 
-        req.user = { sub: idProviderUserId };
-        return next();
-      }
+      req.user = { sub: idProviderUserId };
+      return next();
     }
 
     return middleware(req, res, next);

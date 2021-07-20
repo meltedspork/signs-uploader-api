@@ -1,6 +1,6 @@
 const { signUrl } = require('../../../services/aws');
 const signQueries = {
-  async viewSign (_root, { uid }, { models }) {
+  async viewSign (_root, { uid }, { models, user }) {
     const {
       title,
       pronounce,
@@ -22,16 +22,7 @@ const signQueries = {
       videoUrl,
     };
   },
-  async allSigns (_root, _args, { models, user }) {
-    console.log('__!!!@@--___----__________ user', user);
-    //const { sub: idProviderUserId } = user;
-    // const foundUser = await models.User.findOne({
-    //   where: {
-    //     idProviderUserId
-    //   },
-    // });
-
-    // console.log('USER!!!!>>>>>>>>>>>', foundUser);
+  async allSigns (_root, _args, { models }) {
     return models.Sign.findAll();
   },
 };

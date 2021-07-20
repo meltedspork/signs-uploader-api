@@ -4,6 +4,8 @@ const queryTypeDefs = require('./query');
 const mutationTypeDefs = require('./mutation');
 
 const typeDefs = gql`
+  directive @hasScope(scope: [String]) on FIELD_DEFINITION
+
   scalar Upload
   scalar UUID
 

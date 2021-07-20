@@ -7,10 +7,18 @@ const { v4: uuidv4 } = require('uuid');
 module.exports = (sequelize) => {
   class Sign extends Model {
     static associate(models) {
-      this.creator = models.Sign.hasOne(models.User, {
-        as: 'creator',
-        foreignKey: 'id',
-      });
+      this.associate = {
+        user: Sign.belongsTo(models.User, {
+          as: 'user',
+          // foreignKey: 'user_id',
+          // targetKey: 'id',
+        }),
+        // user: Sign.belongsTo(models.User, {
+        //   as: 'user',
+        //   // foreignKey: 'user_id',
+        //   // targetKey: 'id',
+        // }),
+      }
     }
   }
   Sign.init({
@@ -29,6 +37,10 @@ module.exports = (sequelize) => {
     user_id: {
       allowNull: false,
       type: DataTypes.INTEGER,
+      references: {
+        model: 'Users',
+        key: 'id',
+      },
     },
     state: {
       type: DataTypes.ENUM,

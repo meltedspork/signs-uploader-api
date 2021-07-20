@@ -15,13 +15,19 @@ const jwksRsa = require('jwks-rsa');
 const { graphqlHTTP } = require('express-graphql');
 const graphql = require('./graphql');
 const { graphqlUploadExpress } = require('graphql-upload');
-// const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
+const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
+const {
+  getError,
+  UNAUTHORIZED,
+  FORBIDDEN,
+} = require('./utilities/error');
 
 const { sequelize } = require('./config/sequelize.config');
 const models = require('./models');
 
 const firebaseAdmin = require('./config/firebase-admin.config');
 const firebase = require('./config/firebase.config');
+const { FORMERR } = require('dns');
  
 var app = express();
 app.set('trust proxy', 'loopback');
@@ -71,15 +77,16 @@ if (process.env.NODE_ENV === 'production') {
     '/graphql',
     checkJwt,
     graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
-    graphqlHTTP((req, res, graphQLParams) => {
+    graphqlHTTP(async (req, res, graphQLParams) => {
       console.log('graphQLParams ---->>>>_____', graphQLParams);
-      console.log('useruseruseruseruseruser', req.user);
+      const { user: { sub: idProviderUserId } } = req;
+      const user = await models.User.findOne({ where: { idProviderUserId } });
       return {
         schema: graphql,
         graphiql: false,
         context: {
-          models: models,
-          user: req.user,
+          models,
+          user,
         },
         uploads: false,
       };
@@ -88,18 +95,50 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   app.use(
     '/graphql',
+    //unlessGraphqliAndIsNonProduction(checkJwt),
+    checkJwt,
+    // jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}),
     graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
-    graphqlHTTP((req, res, graphQLParams) => {
+    graphqlHTTP(async (req, res, graphQLParams) => {
       console.log('graphQLParams ---->>>>_____', graphQLParams);
-
+      console.log('req.user ---->>>>_____', req.user);
+      console.log('req.user.sub ---->>>>_____', req.user.sub);
+      console.log('req.user.permissions ---->>>>_____', req.user.permissions);
+      const { user:
+        {
+          sub: idProviderUserId,
+          permissions,
+        }
+      } = req;
+      console.log('req.idProviderUserId ---->>>>_____', idProviderUserId);
+      const user = await models.User.findOne({ where: { idProviderUserId } });
+      console.log('user ---->>>>_____', user);
       return {
         schema: graphql,
         graphiql: true,
         context: {
-          models: models,
-          user: req.user,
+          models,
+          user,
+          permissions,
         },
         uploads: false,
+        formatError: (err) => {
+          const {
+            message,
+            locations,
+            path,
+          } = err;
+          const {
+            statusCode: errorStatusCode,
+            message: errorMessage,
+          } = getError(message);
+          return res.status(errorStatusCode).send({
+            code: message,
+            locations,
+            path,
+            message: errorMessage,
+          });
+        }
       };
     }),
   );
@@ -127,58 +166,74 @@ app.get('/test_db', async (_req, res) => {
 
 app.use(checkJwt);
 
-app.get('/test_jwt', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
-  const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
-  req.session.firebaseToken = firebaseToken;
+// app.get('/test_jwt', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
+//   const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
+//   req.session.firebaseToken = firebaseToken;
 
-  res.send({
-    firebaseToken,
-  });
-});
+//   if (process.env.NODE_ENV === 'production') {
+//     res.send({ status: ok });
+//   } else {
+//     res.send({ firebaseToken });
+//   }
+// });
 
-const getData = async () => {
-  const snapshot = await firebase.firestore().collection('foobars').get();
-  return snapshot.docs.map(doc => doc.data());
-};
+// const getData = async () => {
+//   const snapshot = await firebase.firestore().collection('foobars').get();
+//   return snapshot.docs.map(doc => doc.data());
+// };
 
-app.get('/check', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
-  console.log('--=================================');
-  console.log('--=================================');
-  console.log('--=================================');
-  console.log('--=================================');
-  console.log('--=================================');
-  console.log('--=================================');
-  console.log(req.user);
-  console.log(req.session);
-  console.log(req.session.firebaseToken);
-  console.log('||=================================');
+// app.get('/check', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
+//   console.log('--=================================');
+//   console.log('--=================================');
+//   console.log('--=================================');
+//   console.log('--=================================');
+//   console.log('--=================================');
+//   console.log('--=================================');
+//   console.log(req.user);
+//   console.log(req.session);
+//   console.log(req.session.firebaseToken);
+//   console.log('||=================================');
 
-  let docs = [];
-  try {
-    await firebase.auth().signInWithCustomToken(req.session.firebaseToken);
-    console.log('signedIn:::');
-    docs = await getData();
-    await firebase.auth().signOut();
-    console.log('signedOut:::');
-  } catch (error) {
-    console.error('Something went wrong:', error);
-    docs = error;
-  }
+//   let docs = [];
+//   try {
+//     await firebase.auth().signInWithCustomToken(req.session.firebaseToken);
+//     console.log('signedIn:::');
+//     docs = await getData();
+//     await firebase.auth().signOut();
+//     console.log('signedOut:::');
+//   } catch (error) {
+//     console.error('Something went wrong:', error);
+//     docs = error;
+//   }
   
-  res.send({
-    firebaseToken: req.session.firebaseToken,
-    docs,
-  });
-});
+//   res.send({
+//     firebaseToken: req.session.firebaseToken,
+//     docs,
+//   });
+// });
 
 app.use((err, req, res, next) => {
-  if (err.name && err.name === 'UnauthorizedError') {
-    return res.status(401).send({error: 'Invalid token'});
-  } else if (err.message && err.message === 'Insufficient scope') {
-    return res.status(403).send({error: 'Insufficient permission'});
-  }
+  console.log('error: res', res);
+  console.log('error: req', req);
+  console.log('error: next', next);
+  console.log('error: err', err);
 
-  next(err, req, res);
+  let erroType = null;
+  if (err.name && err.name === 'UnauthorizedError') {
+    erroType = UNAUTHORIZED;
+  } else if (err.message && err.message === 'Insufficient scope') {
+    erroType = FORBIDDEN;
+  } else {
+    return next(err, req, res);
+  }
+  const {
+    statusCode: errorStatusCode,
+    message: errorMessage,
+  } = getError(erroType);
+  return res.status(errorStatusCode).send({
+    code: erroType,
+    message: errorMessage,
+  });
 });
 
 if (process.env.NODE_ENV === 'production') {

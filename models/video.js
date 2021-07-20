@@ -28,6 +28,20 @@ module.exports = (sequelize) => {
     user_id: {
       allowNull: false,
       type: DataTypes.INTEGER,
+      references: {
+        model: 'Users',
+        key: 'id',
+        as: 'userId',
+      }
+    },
+    sign_id: {
+      allowNull: false,
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Signs',
+        key: 'id',
+        as: 'signId',
+      }
     },
     metadata: {
       allowNull: false,
