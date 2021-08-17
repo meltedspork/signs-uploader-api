@@ -37,8 +37,10 @@ const signMutations = {
         file_name: filename,
         user_id: user.id,
         sign_id: signCreated.id,
-        metadata: {},
+        metadata: uploadedToBucket,
       });
+
+      console.log('videoCreated!!!!!! ---', videoCreated);
     }
 
     return signCreated;

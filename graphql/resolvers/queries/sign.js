@@ -6,7 +6,7 @@ const signQueries = {
       pronounce,
       definition,
       state,
-    } = models.Sign.findOne({ where: { uid }});
+    } = await models.Sign.findOne({ where: { uid }});
     console.log('-------______uid', uid);
 
     const fileName = '243acb7b-d253-43e1-80be-b9fd27db365d';

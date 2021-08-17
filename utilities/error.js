@@ -15,6 +15,7 @@ const allErrors = {
 }
 
 const getError = errorName => {
+  console.log('getError: errorName', errorName);
   return allErrors[errorName];
 }
 

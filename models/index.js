@@ -10,7 +10,7 @@ const VideoModel = require('./video');
 const models = {
   Sign: SignModel(sequelize),
   User: UserModel(sequelize),
-  Vide: VideoModel(sequelize),
+  Video: VideoModel(sequelize),
 };
 
 Object.values(models)
