@@ -8,18 +8,18 @@ const typeDefs = gql`
 
   type Sign {
     uid: UUID!
+    videoUrl: String
     title: String
     pronounce: String
     definition: String
     state: String
-    videoUrl: String
   }
 
   input SignInput {
+    videoFile: Upload
     title: String
     pronounce: String
     definition: String
-    videoFile: Upload
   }
 
   type Query {

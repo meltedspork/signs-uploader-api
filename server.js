@@ -122,7 +122,7 @@ if (process.env.NODE_ENV === 'production') {
           permissions,
         },
         uploads: false,
-        formatError: (err) => {
+        customFormatErrorFn: (err) => {
           const {
             message,
             locations,
