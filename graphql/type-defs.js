@@ -8,7 +8,7 @@ const typeDefs = gql`
 
   type Sign {
     uid: UUID!
-    videoUrl: String
+    videoUrls: [String]
     title: String
     pronounce: String
     definition: String

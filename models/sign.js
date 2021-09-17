@@ -10,14 +10,10 @@ module.exports = (sequelize) => {
       this.associate = {
         user: Sign.belongsTo(models.User, {
           as: 'user',
-          // foreignKey: 'user_id',
-          // targetKey: 'id',
         }),
-        // user: Sign.belongsTo(models.User, {
-        //   as: 'user',
-        //   // foreignKey: 'user_id',
-        //   // targetKey: 'id',
-        // }),
+        videos: Sign.hasMany(models.Video, {
+          as: 'videos',
+        }),
       }
     }
   }

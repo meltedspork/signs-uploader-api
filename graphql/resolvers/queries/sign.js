@@ -6,20 +6,38 @@ const signQueries = {
       pronounce,
       definition,
       state,
-    } = await models.Sign.findOne({ where: { uid }});
-    console.log('-------______uid', uid);
+      videos,
+    } = await models.Sign.findOne({
+      where: {
+        uid
+      },
+      include: {
+        model: models.Video,
+        as: 'videos',
+      },
+    });
 
-    const fileName = '243acb7b-d253-43e1-80be-b9fd27db365d';
-    const videoUrl = signUrl(`${fileName}_Video.gif`);
+    videoUrls = videos.map((video) => {
+      const {
+        metadata: {
+          key,
+        }
+      } = video;
+      const fileName = key.split('.')[0];
+      return signUrl(`${fileName}.gif`);
+    });
 
-    console.log('-------______videoUrl', videoUrl);
+    const fileName = '795eb62a-696e-4973-857d-8fc28be480cf';
+    const videoUrl = signUrl(`${fileName}_k8s.gif`);
+    videoUrls.push(videoUrl);
+    console.log('-------______videoUrls', videoUrls);
 
     return {
       title,
       pronounce,
       definition,
       state,
-      videoUrl,
+      videoUrls,
     };
   },
   async allSigns (_root, _args, { models }) {

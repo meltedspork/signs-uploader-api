@@ -47,13 +47,6 @@ const signMutations = {
     return signCreated;
   },
   async updateSign (_root, { uid, signInput }, { models, user }) {
-    console.log('UPDDDATTEEEDDDDD!!!!!!');
-    console.log('UPDDDATTEEEDDDDD!!!!!!');
-    console.log('UPDDDATTEEEDDDDD!!!!!!');
-    console.log('UPDDDATTEEEDDDDD!!!!!!');
-    console.log('-------______user', user);
-    console.log('-------______uid', uid);
-    console.log('-------______signInput', signInput);
     const {
       title: titleInput,
       pronounce: pronounceInput,
@@ -84,7 +77,7 @@ const signMutations = {
       pronounce,
       definition,
       state,
-      videoUrl: 'WOW videoUrl',
+      videoUrls: ['WOW videoUrl'],
     };
   }
 };

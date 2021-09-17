@@ -6,9 +6,11 @@ const { v4: uuidv4 } = require('uuid');
 
 module.exports = (sequelize) => {
   class Video extends Model {
-    // static associate(models) {
-    //   // define association here
-    // }
+    static associate(models) {
+      Video.belongsTo(models.Sign, {
+        as: 'sign',
+      });
+    }
   }
   Video.init({
     uid: {

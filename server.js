@@ -27,7 +27,6 @@ const models = require('./models');
 
 const firebaseAdmin = require('./config/firebase-admin.config');
 const firebase = require('./config/firebase.config');
-const { FORMERR } = require('dns');
  
 var app = express();
 app.set('trust proxy', 'loopback');
