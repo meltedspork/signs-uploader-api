@@ -40,8 +40,13 @@ const signQueries = {
       videoUrls,
     };
   },
-  async allSigns (_root, _args, { models }) {
-    return models.Sign.findAll();
+  async signs (_root, _args, { models }) {
+    const signs = await models.Sign.findAndCountAll({
+      offset: 1,
+      limit: 2,
+    });
+    console.log('signssignssigns:::::', signs);
+    return signs.rows;
   },
 };
 
