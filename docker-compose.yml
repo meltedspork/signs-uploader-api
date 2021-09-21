@@ -9,6 +9,7 @@ services:
     ports:
       - "4000:4000"
     networks:
+      - elastic
       - postgres
 
   postgres:
@@ -37,6 +38,22 @@ services:
   #     - postgres
   #   restart: unless-stopped
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.1
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      ES_JAVA_OPTS: '-Xms256m -Xmx256m'
+      network.bind_host: 0.0.0.0
+      network.host: 0.0.0.0
+      discovery.type: single-node
+    networks:
+      - elastic
+
 networks:
   postgres:
+    driver: bridge
+  elastic:
     driver: bridge

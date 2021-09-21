@@ -11,6 +11,8 @@ const jwt = require('express-jwt');
 const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
 
+const { esClient } = require('./config/elasticsearch.config');
+
 // GraphQL
 const { graphqlHTTP } = require('express-graphql');
 const graphql = require('./graphql');
@@ -63,6 +65,16 @@ const checkJwt = jwt({
 app.get('/', (_req, res) => res.send({
   server: 'Hello World!'
 }));
+
+app.get('/es', (_req, res) => {
+  esClient.cluster.health({}, (err, resp, status) => { 
+    res.send({
+      err,
+      resp,
+      status,
+    });
+  });
+});
 
 app.get('/config.json', (_req, res) => res.send({
   audience: process.env.AUTH0_CLIENT_AUDIENCE,
