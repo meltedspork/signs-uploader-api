@@ -1,4 +1,5 @@
-const { uploadToBucket } = require('../../../services/aws');
+const { uploadToBucket } = require('../../../services/aws-s3-sign');
+const { saveSignDocument } = require('../../../services/elasticsearch-index-sign');
 
 const signMutations = {
   async createSign (_root, { signInput }, { models, user }) {
@@ -9,7 +10,6 @@ const signMutations = {
       definition,
     } = signInput;
     console.log('videoFilevideoFilevideoFile', videoFile);
-    console.log('useruseruseruseruseruser', user);
 
     const signCreated = await models.Sign.create({
       title,
@@ -47,6 +47,7 @@ const signMutations = {
     return signCreated;
   },
   async updateSign (_root, { uid, signInput }, { models, user }) {
+    console.log('signInput', signInput);
     const {
       title: titleInput,
       pronounce: pronounceInput,
@@ -64,6 +65,9 @@ const signMutations = {
       plain: true,
     });
     console.log('-------______updatedSign[1]', updatedSign[1]);
+
+    saveSignDocument(updatedSign[1]);
+
     const {
       title,
       pronounce,

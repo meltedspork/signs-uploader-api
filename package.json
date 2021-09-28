@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "bash": "docker-compose exec server bash",
+    "node": "docker-compose exec server node",
     "psql": "heroku pg:psql -a signs-uploader-api",
     "ps": "heroku ps -a signs-uploader-api",
     "dev": "docker-compose down && docker-compose up",

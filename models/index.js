@@ -17,10 +17,8 @@ Object.values(models)
   .filter(model => typeof model.associate === 'function')
   .forEach(model => model.associate(models));
 
-const db = {
-  ...models,
+module.exports = {
   sequelize,
   Sequelize,
+  ...models,
 };
-
-module.exports = db;

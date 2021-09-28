@@ -41,6 +41,20 @@ module.exports = (sequelize) => {
       unique: true,
       fields: ['uid', 'id_provider_user_id'],
     }],
+    scopes: {
+      serialize: {
+        attributes: {
+          exclude: [
+            'id',
+            'idProviderUserId',
+            'email',
+            'createdAt',
+            'updatedAt',
+            'file_name',
+          ],
+        },
+      },
+    },
     sequelize,
     modelName: 'User',
     tableName: 'Users',

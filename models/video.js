@@ -50,6 +50,22 @@ module.exports = (sequelize) => {
       type: DataTypes.JSONB,
     }
   }, {
+    scopes: {
+      serialize: {
+        attributes: {
+          exclude: [
+            'id',
+            'user_id',
+            'sign_id',
+            'signId',
+            'SignId',
+            'file_name',
+            'createdAt',
+            'updatedAt',
+          ],
+        },
+      },
+    },
     sequelize,
     modelName: 'Video',
     tableName: 'Videos',

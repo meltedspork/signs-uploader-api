@@ -13,6 +13,14 @@ client.cluster.health({}, (err, resp, status) => {
   });
 });
 
+client.indices.create({ index: 'signs' }, (err, resp, status) => {
+  console.log('elasticsearch indexed for "signs": ', {
+    err,
+    resp,
+    status,
+  });
+});
+
 module.exports = {
   esClient: client,
 };

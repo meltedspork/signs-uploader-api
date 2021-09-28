@@ -139,6 +139,7 @@ if (process.env.NODE_ENV === 'production') {
             locations,
             path,
           } = err;
+          console.log('err', message);
           const {
             statusCode: errorStatusCode,
             message: errorMessage,
