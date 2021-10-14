@@ -18,7 +18,7 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
     volumes:
-      - ./postgres-db:/var/lib/postgresql/data/ 
+      - ./postgres-data:/var/lib/postgresql/data/ 
     ports:
       - "5432:5432"
     networks:
@@ -49,6 +49,8 @@ services:
       network.bind_host: 0.0.0.0
       network.host: 0.0.0.0
       discovery.type: single-node
+    volumes:
+      - ./elasticsearch-data:/usr/share/elasticsearch/data
     networks:
       - elastic
 

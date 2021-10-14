@@ -50,4 +50,5 @@ Thumbs.db
 
 .env
 *.pem
-postgres-db
+postgres-data
+elasticsearch-data
