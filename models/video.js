@@ -60,6 +60,7 @@ module.exports = (sequelize) => {
             'signId',
             'SignId',
             'file_name',
+            'metadata',
             'createdAt',
             'updatedAt',
           ],

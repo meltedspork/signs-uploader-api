@@ -19,17 +19,17 @@ const saveSignDocument = async (sign) => {
 
   console.log("saveSignDocumentsaveSignDocumentsaveSignDocumentsaveSignDocument: sign: JSON", seralized.toJSON());
 
-  // esClient.create({
-  //   index: 'signs',
-  //   id: sign.uid,
-  //   body,
-  // }).then((result) => {
-  //   console.log('resultresultresultresult', result);
-  //   console.log('resultresultresultresult', result);
-  //   console.log('resultresultresultresult', result);
-  //   console.log('resultresultresultresult', result);
-  //   console.log('resultresultresultresult', result);
-  // });
+  esClient.create({
+    index: 'signs',
+    id: sign.uid,
+    body: seralized.toJSON(),
+  }).then((result) => {
+    console.log('resultresultresultresult', result);
+    console.log('resultresultresultresult', result);
+    console.log('resultresultresultresult', result);
+    console.log('resultresultresultresult', result);
+    console.log('resultresultresultresult', result);
+  });
 
   console.log("saveSignDocumentsaveSignDocumentsaveSignDocumentsaveSignDocument: End");
 

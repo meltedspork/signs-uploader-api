@@ -63,11 +63,11 @@ const checkJwt = jwt({
 });
 
 app.get('/', (_req, res) => res.send({
-  server: 'Hello World!'
+  server: 'Hello World!',
 }));
 
 app.get('/es', (_req, res) => {
-  esClient.cluster.health({}, (err, resp, status) => { 
+  esClient.cluster.health({}, (err, resp, status) => {
     res.send({
       err,
       resp,

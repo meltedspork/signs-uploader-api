@@ -42,72 +42,41 @@ const signQueries = {
       videoUrls,
     };
   },
-  async signs (_root, _args, { models }) {
-    // esClient.search({
-    //   index: 'signs',
-    //   body: {query: { match_all: {}}},
-    // }).then((res) => {
-    //   console.log('res::', res);
-    //   console.log('res.hits::', res.hits);
-    //   // console.log('res.hits.hits::', res.hits.hits);
-    //   // console.log('res.hits.hits[0]._source::', res.hits.hits[0]._source);
-    //   // console.log('res.hits.hits[1]._source::', res.hits.hits[1]._source);
-    // }).catch((err) => { 
-    //   console.log('ERROR::', err);
-    // });
-
+  async viewSigns (_root, _args, { models }) {
     const {
       hits: {
-        hits
+        total,
+        hits,
       }
     } = await esClient.search({
       index: 'signs',
-      body: {query: { match_all: {}}},
+      body: {
+        from: 5,
+        size: 10,
+        query: { match_all: {}}
+      },
     });
     const signs = hits.map((hit) => {
       const {
         _id: uid,
         _source: {
-          // videos,: videoUrls
           title,
-          pronounce,
-          definition,
           state,
         }
       } = hit;
-      let videoUrls = [];
       return {
         uid,
-        videoUrls,
         title,
-        pronounce,
-        definition,
         state,
       }
     });
-    console.log('signs', signs);
-    console.log('STR###############################');
-    console.log('STR###############################');
-    console.log('STR###############################');
-    console.log('STR###############################');
-    console.log('STR###############################');
-    console.log('STR###############################');
-    console.log('STR###############################');
-    console.log('STR###############################');
-    console.log('STR###############################');
-    console.log('STR###############################');
-    console.log('hits###############################', hits)
-    console.log('END###############################');
-
-    const signs1 = await models.Sign.findAndCountAll({
-      // offset: 1,
-      // limit: 2,
-    });
-    console.log('signssignssigns:::::111')
-    console.log('signssignssigns:::::', signs1);
-    console.log('signssignssigns:::::222')
-    // return signs.rows;
-    return signs1.rows
+    return {
+      paging: {
+        current: 0,
+        total: total.value,
+      },
+      signs,
+    };
   },
 };
 

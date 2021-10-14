@@ -2,7 +2,7 @@ const { FORBIDDEN } = require('../utilities/error');
 
 const directiveResolvers = {
   async hasScope (next, _source, { scope }, { permissions }) {
-    const success = permissions.every((permission) => scope.includes(permission))
+    const success = scope.every((permission) => permissions.includes(permission));
     if (success) {
       return next();
     }
