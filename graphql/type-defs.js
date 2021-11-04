@@ -6,8 +6,9 @@ const typeDefs = gql`
   scalar Upload
   scalar UUID
 
-  type Paging {
-    current: Int
+  type Pagination {
+    currentPage: Int
+    limit: Int
     total: Int
   }
 
@@ -21,7 +22,7 @@ const typeDefs = gql`
   }
 
   type Signs {
-    paging: Paging
+    pagination: Pagination
     signs: [Sign!]!
   }
 
@@ -34,7 +35,7 @@ const typeDefs = gql`
 
   type Query {
     viewSign(uid: UUID!): Sign @hasScope(scope: ["read:signs"])
-    viewSigns: Signs @hasScope(scope: ["read:signs"])
+    viewSigns(page: Int!): Signs @hasScope(scope: ["read:signs"])
   }
 
   type Mutation {

@@ -42,40 +42,49 @@ const signQueries = {
       videoUrls,
     };
   },
-  async viewSigns (_root, _args, { models }) {
-    const {
-      hits: {
-        total,
-        hits,
-      }
-    } = await esClient.search({
-      index: 'signs',
-      body: {
-        from: 5,
-        size: 10,
-        query: { match_all: {}}
-      },
-    });
-    const signs = hits.map((hit) => {
-      const {
-        _id: uid,
-        _source: {
-          title,
-          state,
-        }
-      } = hit;
-      return {
-        uid,
-        title,
-        state,
-      }
-    });
+  async viewSigns (_root, { page }, { models }) {
+    const limit = 3;
+    const offset = page * limit;
+    // const {
+    //   hits: {
+    //     total,
+    //     hits,
+    //   }
+    // } = await esClient.search({
+    //   index: 'signs',
+    //   body: {
+    //     size: 10,
+    //     query: { match_all: {}},
+    //     sort: [{ title: 'asc' }],
+    //     search_after: [5],
+    //   },
+    // });
+    // const signs = hits.map((hit) => {
+    //   const {
+    //     _id: uid,
+    //     _source: {
+    //       title,
+    //       state,
+    //     }
+    //   } = hit;
+    //   return {
+    //     uid,
+    //     title,
+    //     state,
+    //   }
+    // });
+    const { count, rows } = await models.Sign.findAndCountAll({ offset, limit });
+    console.log('roooowsss')
+    console.log('roooowsss')
+    console.log('roooowsss')
+    console.log('roooowsss', rows)
     return {
-      paging: {
-        current: 0,
-        total: total.value,
+      pagination: {
+        currentPage: page,
+        limit,
+        total: count, //total.value,
       },
-      signs,
+      signs: rows, // signs,
     };
   },
 };
