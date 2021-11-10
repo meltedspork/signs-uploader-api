@@ -6,12 +6,6 @@ const typeDefs = gql`
   scalar Upload
   scalar UUID
 
-  type Pagination {
-    currentPage: Int
-    limit: Int
-    total: Int
-  }
-
   type Sign {
     uid: UUID!
     videoUrls: [String]
@@ -19,11 +13,6 @@ const typeDefs = gql`
     pronounce: String
     definition: String
     state: String
-  }
-
-  type Signs {
-    pagination: Pagination
-    signs: [Sign!]!
   }
 
   input SignInput {
@@ -35,7 +24,7 @@ const typeDefs = gql`
 
   type Query {
     viewSign(uid: UUID!): Sign @hasScope(scope: ["read:signs"])
-    viewSigns(page: Int!): Signs @hasScope(scope: ["read:signs"])
+    viewSigns(page: Int, size: Int): [Sign!]! @hasScope(scope: ["read:signs"])
   }
 
   type Mutation {

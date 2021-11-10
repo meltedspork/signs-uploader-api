@@ -35,6 +35,11 @@ app.set('trust proxy', 'loopback');
 app.use(cors({
   credentials: true,
   origin: process.env.ORIGINS.split(','),
+  exposedHeaders: [
+    'X-Pagination-Total',
+    'X-Pagination-Page',
+    'X-Pagination-Size',
+  ],
 }));
 app.use(express.json({limit: '25mb'}));
 app.use(express.urlencoded({limit: '25mb'}));
@@ -112,14 +117,16 @@ if (process.env.NODE_ENV === 'production') {
     graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
     graphqlHTTP(async (req, res, graphQLParams) => {
       console.log('graphQLParams ---->>>>_____', graphQLParams);
+      console.log('req.headers ---->>>>_____', req.headers);
       console.log('req.user ---->>>>_____', req.user);
       console.log('req.user.sub ---->>>>_____', req.user.sub);
       console.log('req.user.permissions ---->>>>_____', req.user.permissions);
-      const { user:
-        {
+      const {
+        user: {
           sub: idProviderUserId,
           permissions,
-        }
+        },
+        headers,
       } = req;
       console.log('req.idProviderUserId ---->>>>_____', idProviderUserId);
       const user = await models.User.findOne({ where: { idProviderUserId } });
@@ -128,6 +135,8 @@ if (process.env.NODE_ENV === 'production') {
         schema: graphql,
         graphiql: true,
         context: {
+          res,
+          headers,
           models,
           user,
           permissions,

@@ -42,9 +42,12 @@ const signQueries = {
       videoUrls,
     };
   },
-  async viewSigns (_root, { page }, { models }) {
-    const limit = 3;
-    const offset = page * limit;
+  async viewSigns (_root, args, { res, models }) {
+    const {
+      page = 1,
+      size: limit = 15,
+    } = args;
+    const offset = (page - 1) * limit;
     // const {
     //   hits: {
     //     total,
@@ -74,19 +77,13 @@ const signQueries = {
     //   }
     // });
     const { count, rows } = await models.Sign.findAndCountAll({ offset, limit });
-    console.log('roooowsss')
-    console.log('roooowsss')
-    console.log('roooowsss')
-    console.log('roooowsss', rows)
-    return {
-      pagination: {
-        currentPage: page,
-        limit,
-        total: count, //total.value,
-      },
-      signs: rows, // signs,
-    };
-  },
+    res.header('X-Pagination-Total', count); //total.value);
+    res.header('X-Pagination-Page', page);
+    res.header('X-Pagination-Size', limit);
+
+    return rows;
+    // return signs;
+  }
 };
 
 module.exports = signQueries;
