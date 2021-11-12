@@ -4,7 +4,7 @@ const { signUrl } = require('../../../services/aws-s3-sign');
 const signQueries = {
   async viewSign (_root, { uid }, { models, user }) {
     const {
-      title,
+      name,
       pronounce,
       definition,
       state,
@@ -35,7 +35,7 @@ const signQueries = {
     console.log('-------______videoUrls', videoUrls);
 
     return {
-      title,
+      name,
       pronounce,
       definition,
       state,
@@ -58,7 +58,7 @@ const signQueries = {
     //   body: {
     //     size: 10,
     //     query: { match_all: {}},
-    //     sort: [{ title: 'asc' }],
+    //     sort: [{ name: 'asc' }],
     //     search_after: [5],
     //   },
     // });
@@ -66,13 +66,13 @@ const signQueries = {
     //   const {
     //     _id: uid,
     //     _source: {
-    //       title,
+    //       name,
     //       state,
     //     }
     //   } = hit;
     //   return {
     //     uid,
-    //     title,
+    //     name,
     //     state,
     //   }
     // });

@@ -60,7 +60,7 @@ module.exports = (sequelize) => {
       defaultValue: () => uuidv4(),
       unique: true,
     },
-    title: {
+    name: {
       allowNull: false,
       type: DataTypes.STRING,
     },

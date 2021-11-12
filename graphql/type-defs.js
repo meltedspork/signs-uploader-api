@@ -9,7 +9,7 @@ const typeDefs = gql`
   type Sign {
     uid: UUID!
     videoUrls: [String]
-    title: String
+    name: String
     pronounce: String
     definition: String
     state: String
@@ -17,19 +17,34 @@ const typeDefs = gql`
 
   input SignInput {
     videoFile: Upload
-    title: String
+    name: String
     pronounce: String
     definition: String
+  }
+
+  type Topic {
+    uid: UUID!
+    name: String
+  }
+
+  input TopicInput {
+    name: String
   }
 
   type Query {
     viewSign(uid: UUID!): Sign @hasScope(scope: ["read:signs"])
     viewSigns(page: Int, size: Int): [Sign!]! @hasScope(scope: ["read:signs"])
+
+    viewTopic(uid: UUID!): Topic @hasScope(scope: ["read:signs"])
+    viewTopics(page: Int, size: Int): [Topic!]! @hasScope(scope: ["read:signs"])
   }
 
   type Mutation {
     createSign(signInput: SignInput): Sign @hasScope(scope: ["write:signs"])
     updateSign(uid: UUID!, signInput: SignInput): Sign @hasScope(scope: ["write:signs"])
+
+    createTopic(topicInput: TopicInput): Topic @hasScope(scope: ["write:signs"])
+    updateTopic(uid: UUID!, topicInput: TopicInput): Topic @hasScope(scope: ["write:signs"])
   }
 `;
 

@@ -5,14 +5,14 @@ const signMutations = {
   async createSign (_root, { signInput }, { models, user }) {
     const {
       videoFile,
-      title,
+      name,
       pronounce,
       definition,
     } = signInput;
     console.log('videoFilevideoFilevideoFile', videoFile);
 
     const signCreated = await models.Sign.create({
-      title,
+      name,
       pronounce,
       definition,
       user_id: user.id,
@@ -49,12 +49,12 @@ const signMutations = {
   async updateSign (_root, { uid, signInput }, { models, user }) {
     console.log('signInput', signInput);
     const {
-      title: titleInput,
+      name: nameInput,
       pronounce: pronounceInput,
       definition: definitionInput,
     } = signInput;
     const updatedSign = await models.Sign.update({
-      title: titleInput,
+      name: nameInput,
       pronounce: pronounceInput,
       definition: definitionInput,
     }, {
@@ -69,7 +69,7 @@ const signMutations = {
     saveSignDocument(updatedSign[1]);
 
     const {
-      title,
+      name,
       pronounce,
       definition,
       state,
@@ -77,7 +77,7 @@ const signMutations = {
 
     return {
       uid,
-      title,
+      name,
       pronounce,
       definition,
       state,
