@@ -1,22 +1,25 @@
 const errorTypes = {
-  UNAUTHORIZED: 'UNAUTHORIZED',
   FORBIDDEN: 'FORBIDDEN',
+  UNAUTHORIZED: 'UNAUTHORIZED',
 }
 
 const allErrors = {
-  UNAUTHORIZED: {
-    message: 'Authentication required',
-    statusCode: 401,
-  },
   FORBIDDEN: {
     message: 'Access forbidden',
     statusCode: 403,
+  },
+  UNAUTHORIZED: {
+    message: 'Authentication required',
+    statusCode: 401,
   },
 }
 
 const getError = errorName => {
   console.log('getError: errorName', errorName);
-  return allErrors[errorName];
+  return allErrors[errorName] || {
+    message: errorName,
+    statusCode: 500,
+  };
 }
 
 module.exports = {

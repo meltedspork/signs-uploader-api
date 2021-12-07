@@ -50,6 +50,11 @@ module.exports = (sequelize) => {
         videos: Sign.hasMany(models.Video, {
           as: 'videos',
         }),
+        topics: Sign.belongsToMany(models.Topic, {
+          through: models.SignTopic,
+          as: 'topics',
+          foreignKey: 'sign_id',
+        }),
       }
     }
   }

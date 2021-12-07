@@ -8,11 +8,17 @@ const typeDefs = gql`
 
   type Sign {
     uid: UUID!
-    videoUrls: [String]
+    definition: String
     name: String
     pronounce: String
-    definition: String
     state: String
+    topics: [Topic]
+    videoUrls: [String]
+  }
+
+  type SignForm {
+    sign: Sign!
+    topics: [Topic!]
   }
 
   input SignInput {
@@ -20,22 +26,25 @@ const typeDefs = gql`
     name: String
     pronounce: String
     definition: String
+    topics: [TopicInput]
   }
 
   type Topic {
-    uid: UUID!
+    uid: UUID
     name: String
+    value: String
   }
 
   input TopicInput {
+    uid: UUID
     name: String
   }
 
   type Query {
-    viewSign(uid: UUID!): Sign @hasScope(scope: ["read:signs"])
+    viewSign(uid: UUID!): SignForm! @hasScope(scope: ["read:signs"])
     viewSigns(page: Int, size: Int): [Sign!]! @hasScope(scope: ["read:signs"])
 
-    viewTopic(uid: UUID!): Topic @hasScope(scope: ["read:signs"])
+    viewTopic(uid: UUID!): Topic! @hasScope(scope: ["read:signs"])
     viewTopics(page: Int, size: Int): [Topic!]! @hasScope(scope: ["read:signs"])
   }
 

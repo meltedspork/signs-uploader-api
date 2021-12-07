@@ -4,19 +4,18 @@ const { signUrl } = require('../../../services/aws-s3-sign');
 const signQueries = {
   async viewSign (_root, { uid }, { models, user }) {
     const {
+      definition,
       name,
       pronounce,
-      definition,
       state,
+      topics,
       videos,
     } = await models.Sign.findOne({
-      where: {
-        uid
-      },
-      include: {
-        model: models.Video,
-        as: 'videos',
-      },
+      where: { uid },
+      include: [
+        'topics',
+        'videos',
+      ],
     });
 
     videoUrls = videos.map((video) => {
@@ -34,13 +33,21 @@ const signQueries = {
     videoUrls.push(videoUrl);
     console.log('-------______videoUrls', videoUrls);
 
-    return {
-      name,
-      pronounce,
-      definition,
-      state,
-      videoUrls,
+    const allTopics = await models.Topic.findAll();
+
+    const signForm = {
+      sign: {
+        name,
+        definition,
+        pronounce,
+        state,
+        topics, //: topics.map(({ name, value }) => ({ name, value, })).flat(),
+        videoUrls,
+      },
+      topics: allTopics,
     };
+    console.log('signForm:', signForm);
+    return signForm;
   },
   async viewSigns (_root, args, { res, models }) {
     const {

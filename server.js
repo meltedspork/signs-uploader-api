@@ -143,12 +143,12 @@ if (process.env.NODE_ENV === 'production') {
         },
         uploads: false,
         customFormatErrorFn: (err) => {
+          console.log('err', err);
           const {
             message,
             locations,
             path,
           } = err;
-          console.log('err', message);
           const {
             statusCode: errorStatusCode,
             message: errorMessage,

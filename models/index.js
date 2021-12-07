@@ -4,6 +4,7 @@ const {
 } = require('../config/sequelize.config');
 
 const SignModel = require('./sign');
+const SignTopicModel = require('./sign_topic');
 const TopicModel = require('./topic');
 const UserModel = require('./user');
 const VideoModel = require('./video');
@@ -11,6 +12,7 @@ const VideoModel = require('./video');
 const models = {
   Sign: SignModel(sequelize),
   Topic: TopicModel(sequelize),
+  SignTopic: SignTopicModel(sequelize),
   User: UserModel(sequelize),
   Video: VideoModel(sequelize),
 };

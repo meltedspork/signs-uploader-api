@@ -3,6 +3,11 @@ const {
   Model,
 } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
+const snakeCase = require('lodash/snakeCase');
+
+const convertNameToValue = (topic) => {
+  topic.value = snakeCase(topic.name);
+}
 
 module.exports = (sequelize) => {
   class Topic extends Model {
@@ -15,10 +20,16 @@ module.exports = (sequelize) => {
           as: 'creator',
           foreignKey: 'userId',
         }),
-        videos: Topic.hasMany(models.Sign, {
+        signs: Topic.belongsToMany(models.Sign, {
+          through: models.SignTopic,
           as: 'signs',
+          foreignKey: 'topic_id',
         }),
-      }
+      };
+    }
+
+    static findByUid(uid) {
+      return Topic.findOne({ where: { uid }});
     }
   }
   Topic.init({
@@ -33,6 +44,11 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       unique: true,
     },
+    value: {
+      allowNull: false,
+      type: DataTypes.TEXT,
+      unique: true,
+    },
     user_id: {
       allowNull: false,
       type: DataTypes.INTEGER,
@@ -44,7 +60,10 @@ module.exports = (sequelize) => {
   }, {
     indexes: [{
       unique: true,
-      fields: ['uid'],
+      fields: [
+        'uid',
+        'value',
+      ],
     }],
     scopes: {
       serialize: {
@@ -60,6 +79,10 @@ module.exports = (sequelize) => {
     sequelize,
     modelName: 'Topic',
     tableName: 'Topics',
+    hooks: {
+      beforeSave: convertNameToValue,
+      beforeUpdate: convertNameToValue,
+    }
   });
   return Topic;
 };
