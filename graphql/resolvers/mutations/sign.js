@@ -83,7 +83,7 @@ const signMutations = {
       });
       await updatedSign[1].setTopics(
         await Promise.all(
-          topicInputs.map(async ({ uid }) => {
+          topicInputs.map(async (uid) => {
             return await models.Topic.findByUid(uid);
           })
         ),

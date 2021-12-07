@@ -16,6 +16,12 @@ const typeDefs = gql`
     videoUrls: [String]
   }
 
+  type Topic {
+    uid: UUID
+    name: String
+    value: String
+  }
+
   type SignForm {
     sign: Sign!
     topics: [Topic!]
@@ -26,13 +32,7 @@ const typeDefs = gql`
     name: String
     pronounce: String
     definition: String
-    topics: [TopicInput]
-  }
-
-  type Topic {
-    uid: UUID
-    name: String
-    value: String
+    topics: [String]
   }
 
   input TopicInput {
