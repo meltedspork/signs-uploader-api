@@ -67,13 +67,9 @@ module.exports = (sequelize) => {
     }],
     scopes: {
       serialize: {
-        attributes: {
-          exclude: [
-            'id',
-            'createdAt',
-            'updatedAt',
-          ],
-        },
+        attributes: [
+          'value',
+        ],
       },
     },
     sequelize,

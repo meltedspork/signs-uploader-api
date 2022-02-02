@@ -1,9 +1,15 @@
 const { esClient } = require('../config/elasticsearch.config');
-const { Sign, User, Video } = require('../models');
 
-const saveSignDocument = async (sign) => {
-  const seralized = await Sign.scope('serialize').findByPk(sign.id, {
+const _buildDocumentObject = async (sign, { Sign, Topic, User, Video }) => {
+  const serialized = await Sign.scope('serialize').findByPk(sign.id, {
     include: [
+      {
+        model: Topic.scope('serialize'),
+        as: 'topics',
+        through: {
+          attributes: [],
+        },
+      },
       {
         model: Video.scope('serialize'),
         as: 'videos',
@@ -15,25 +21,41 @@ const saveSignDocument = async (sign) => {
     ],
   });
 
-  console.log("saveSignDocumentsaveSignDocumentsaveSignDocumentsaveSignDocument: sign2", seralized);
-
-  console.log("saveSignDocumentsaveSignDocumentsaveSignDocumentsaveSignDocument: sign: JSON", seralized.toJSON());
-
-  esClient.create({
+  const docObj = {
     index: 'signs',
     id: sign.uid,
-    body: seralized.toJSON(),
-  }).then((result) => {
-    console.log('resultresultresultresult', result);
-    console.log('resultresultresultresult', result);
-    console.log('resultresultresultresult', result);
-    console.log('resultresultresultresult', result);
-    console.log('resultresultresultresult', result);
+    body: serialized.toJSON(),
+  };
+
+  console.log("elasticsearch sign index: docObj", docObj);
+
+  return docObj;
+}
+
+const saveSignDocument = async (sign, models) => {
+  console.log('elasticsearch sign index: saveSignDocument: Start');
+
+  docObj = _buildDocumentObject(sign, models);
+
+  esClient.create(docObj).then((result) => {
+    console.log('elasticsearch sign index: saveSignDocument: docObj', docObj.toJSON());
+    console.log('elasticsearch sign index: saveSignDocument: result', result);
   });
 
-  console.log("saveSignDocumentsaveSignDocumentsaveSignDocumentsaveSignDocument: End");
+  console.log("elasticsearch sign index: saveSignDocument: End");
+}
 
-  // return sign;
+const updateSignDocument = async (sign, models) => {
+  console.log('elasticsearch sign index: updateSignDocument: Start');
+
+  docObj = _buildDocumentObject(sign, models);
+
+  esClient.update(docObj).then((result) => {
+    console.log('elasticsearch sign index: updateSignDocument: docObj', docObj.toJSON());
+    console.log('elasticsearch sign index: updateSignDocument: result', result);
+  });
+
+  console.log("elasticsearch sign index: updateSignDocument: End");
 }
 
 const destroySignDocument = async (sign) => {
@@ -46,5 +68,6 @@ const destroySignDocument = async (sign) => {
 
 module.exports = {
   saveSignDocument,
+  updateSignDocument,
   destroySignDocument,
 };

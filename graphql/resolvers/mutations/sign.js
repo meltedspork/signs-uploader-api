@@ -1,6 +1,6 @@
 const { sequelize } = require('../../../models');
 const { uploadToBucket } = require('../../../services/aws-s3-sign');
-const { saveSignDocument } = require('../../../services/elasticsearch-index-sign');
+const { saveSignDocument, updateSignDocument } = require('../../../services/elasticsearch-index-sign');
 
 const signMutations = {
   async createSign (_root, { signInput }, { models, user }) {
@@ -95,7 +95,7 @@ const signMutations = {
       // console.log('-------______updatedSign[1]', updatedSign[1]);
       console.log('-------______updatedSign', updatedSign)
 
-      saveSignDocument(updatedSign[1]);
+      await updateSignDocument(updatedSign[1], models);
 
       const {
         definition,

@@ -55,41 +55,45 @@ const signQueries = {
       size: limit = 15,
     } = args;
     const offset = (page - 1) * limit;
-    // const {
-    //   hits: {
-    //     total,
-    //     hits,
-    //   }
-    // } = await esClient.search({
-    //   index: 'signs',
-    //   body: {
-    //     size: 10,
-    //     query: { match_all: {}},
-    //     sort: [{ name: 'asc' }],
-    //     search_after: [5],
-    //   },
-    // });
-    // const signs = hits.map((hit) => {
-    //   const {
-    //     _id: uid,
-    //     _source: {
-    //       name,
-    //       state,
-    //     }
-    //   } = hit;
-    //   return {
-    //     uid,
-    //     name,
-    //     state,
-    //   }
-    // });
-    const { count, rows } = await models.Sign.findAndCountAll({ offset, limit });
-    res.header('X-Pagination-Total', count); //total.value);
+    const {
+      hits: {
+        total,
+        hits,
+      }
+    } = await esClient.search({
+      index: 'signs',
+      body: {
+        size: limit,
+        query: { match_all: {}},
+        sort: { name: { order: 'asc' }},
+        search_after: [offset],
+      },
+    });
+    const signs = hits.map((hit) => {
+      const {
+        _id: uid,
+        _source: {
+          name,
+          state,
+        }
+      } = hit;
+      return {
+        uid,
+        name,
+        state,
+      }
+    });
+
+    res.header('X-Pagination-Total', total.value);
     res.header('X-Pagination-Page', page);
     res.header('X-Pagination-Size', limit);
 
-    return rows;
-    // return signs;
+    // const { count, rows } = await models.Sign.findAndCountAll({ offset, limit });
+    // res.header('X-Pagination-Total', count);
+
+    console.log('signs:', signs);
+
+    return signs;
   }
 };
 
