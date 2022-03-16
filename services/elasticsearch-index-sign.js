@@ -73,41 +73,8 @@ const destroySignDocument = async (sign) => {
   console.log('elasticsearch sign index: destroySignDocument: End');
 }
 
-const createPointInTime = async () => {
-  console.log('elasticsearch sign index: createAndGetPointInTime: Start');
-
-  const { body } = await esClient.openPointInTime({
-    index: 'signs',
-    keep_alive: '1m',
-  });
-
-  console.log('elasticsearch sign index: createAndGetPointInTime: body:', body);
-  const { id: pointInTimeId } = body;
-  console.log('elasticsearch sign index: createAndGetPointInTime: pointInTimeId:', pointInTimeId);
-  console.log('elasticsearch sign index: createAndGetPointInTime: End');
-
-  return pointInTimeId;
-}
-
-const deletePointInTime = async (pointInTimeId) => {
-  console.log('elasticsearch sign index: deletePointInTime: Start');
-
-  const result = await esClient.closePointInTime({
-    body: {
-      id: pointInTimeId,
-    },
-  });
-
-  console.log('deletePointInTime sign index: deletePointInTime: result:', result);
-  console.log('deletePointInTime sign index: deletePointInTime: End');
-
-  return result;
-}
-
 module.exports = {
   saveSignDocument,
   updateSignDocument,
   destroySignDocument,
-  createPointInTime,
-  deletePointInTime,
 };
