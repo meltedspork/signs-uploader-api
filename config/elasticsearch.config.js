@@ -1,9 +1,9 @@
 require('dotenv').config();
-const elasticsearch = require('elasticsearch');
+const elasticsearch = require('@elastic/elasticsearch');
 
-const host = process.env.SEARCHBOX_URL;
+const node = process.env.SEARCHBOX_URL;
 
-var client = new elasticsearch.Client({ host });
+var client = new elasticsearch.Client({ node });
 
 client.cluster.health({}, (err, resp, status) => { 
   console.log('elasticsearch health: ', {

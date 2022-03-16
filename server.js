@@ -127,6 +127,7 @@ if (process.env.NODE_ENV === 'production') {
           permissions,
         },
         headers,
+        session,
       } = req;
       console.log('req.idProviderUserId ---->>>>_____', idProviderUserId);
       const user = await models.User.findOne({ where: { idProviderUserId } });
@@ -140,6 +141,7 @@ if (process.env.NODE_ENV === 'production') {
           models,
           user,
           permissions,
+          session,
         },
         uploads: false,
         customFormatErrorFn: (err) => {
