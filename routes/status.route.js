@@ -28,7 +28,6 @@ router.get('/status', async (_req, res) => {
     });
   }
 
-
   try {
     const { esClient } = elasticsearchConfig;
     const {

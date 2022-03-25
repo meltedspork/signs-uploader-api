@@ -6,30 +6,32 @@ const cors = require('cors');
 const expressSession = require('express-session');
 const FirebaseStore = require('connect-session-firebase')(expressSession);
 
+const checkJwtMiddleware = require('./middlewares/check-jwt.middleware');
+
 // Auth0 deps
-const jwt = require('express-jwt');
+// const jwt = require('express-jwt');
 const jwtAuthz = require('express-jwt-authz');
-const jwksRsa = require('jwks-rsa');
+// const jwksRsa = require('jwks-rsa');
 
 // GraphQL
-const { graphqlHTTP } = require('express-graphql');
-const graphql = require('./graphql');
-const { graphqlUploadExpress } = require('graphql-upload');
-const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
+// const { graphqlHTTP } = require('express-graphql');
+// const graphql = require('./graphql');
+// const { graphqlUploadExpress } = require('graphql-upload');
+// const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
 const {
   getError,
   UNAUTHORIZED,
   FORBIDDEN,
 } = require('./services/error.service');
 
-const models = require('./models');
+// const models = require('./models');
 
 const firebaseAdmin = require('./config/firebase-admin.config');
 const firebase = require('./config/firebase.config');
 
 const configRoute = require('./routes/config.route');
 const statusRoute = require('./routes/status.route');
-const { index, hello } = require('./demo');
+const graphqlRoute = require('./routes/graphql.route');
  
 var app = express();
 app.set('trust proxy', 'loopback');
@@ -56,105 +58,27 @@ app.use(expressSession({
   secure: true,
 }));
 
-const checkJwt = jwt({
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: process.env.AUTH0_SERVER_JWKS_URI,
-  }),
-  audience: process.env.AUTH0_CLIENT_AUDIENCE,
-  issuer: process.env.AUTH0_SERVER_ISSUER,
-  algorithms: process.env.AUTH0_SERVER_ALGORITHMS.split(','),
-});
+// const checkJwt = jwt({
+//   secret: jwksRsa.expressJwtSecret({
+//     cache: true,
+//     rateLimit: true,
+//     jwksRequestsPerMinute: 5,
+//     jwksUri: process.env.AUTH0_SERVER_JWKS_URI,
+//   }),
+//   audience: process.env.AUTH0_CLIENT_AUDIENCE,
+//   issuer: process.env.AUTH0_SERVER_ISSUER,
+//   algorithms: process.env.AUTH0_SERVER_ALGORITHMS.split(','),
+// });
 
-app.get('/', index);
-app.get('/hello/:name', hello);
+// app.use(checkJwtMiddleware);
 
 app.use(configRoute);
 
-if (process.env.NODE_ENV === 'production') {
-  app.post(
-    '/graphql',
-    checkJwt,
-    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
-    graphqlHTTP(async (req, res, graphQLParams) => {
-      console.log('graphQLParams ---->>>>_____', graphQLParams);
-      const { user: { sub: idProviderUserId } } = req;
-      const user = await models.User.findOne({ where: { idProviderUserId } });
-      return {
-        schema: graphql,
-        graphiql: false,
-        context: {
-          models,
-          user,
-        },
-        uploads: false,
-      };
-    }),
-  );
-} else {
-  app.use(
-    '/graphql',
-    //unlessGraphqliAndIsNonProduction(checkJwt),
-    checkJwt,
-    // jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}),
-    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
-    graphqlHTTP(async (req, res, graphQLParams) => {
-      console.log('graphQLParams ---->>>>_____', graphQLParams);
-      console.log('req.headers ---->>>>_____', req.headers);
-      console.log('req.user ---->>>>_____', req.user);
-      console.log('req.user.sub ---->>>>_____', req.user.sub);
-      console.log('req.user.permissions ---->>>>_____', req.user.permissions);
-      const {
-        user: {
-          sub: idProviderUserId,
-          permissions,
-        },
-        headers,
-        session,
-      } = req;
-      console.log('req.idProviderUserId ---->>>>_____', idProviderUserId);
-      const user = await models.User.findOne({ where: { idProviderUserId } });
-      console.log('user ---->>>>_____', user);
-      return {
-        schema: graphql,
-        graphiql: true,
-        context: {
-          res,
-          headers,
-          models,
-          user,
-          permissions,
-          session,
-        },
-        uploads: false,
-        customFormatErrorFn: (err) => {
-          console.log('err', err);
-          const {
-            message,
-            locations,
-            path,
-          } = err;
-          const {
-            statusCode: errorStatusCode,
-            message: errorMessage,
-          } = getError(message);
-          return res.status(errorStatusCode).send({
-            code: message,
-            locations,
-            path,
-            message: errorMessage,
-          });
-        }
-      };
-    }),
-  );
-}
-
+app.use(graphqlRoute);
+// app.use(checkJwtMiddleware, statusRoute);
 app.use(statusRoute);
 
-app.use(checkJwt);
+app.use(checkJwtMiddleware);
 
 // app.get('/test_jwt', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
 //   const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
