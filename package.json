@@ -18,7 +18,7 @@
     "start:dev": "nodemon server.js",
     "heroku-prebuild": "npm run db:migrate",
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "seed:user": "docker-compose exec server node scripts/connectAuthenticationUserToAppUser.js $1 $2 $3"
   },
   "author": "",
@@ -52,8 +52,11 @@
   },
   "devDependencies": {
     "eslint": "^7.25.0",
+    "jest": "^27.5.1",
     "nodemon": "^2.0.7",
-    "sequelize-cli": "^6.2.0"
+    "sequelize-cli": "^6.2.0",
+    "sequelize-mock": "^0.10.2",
+    "supertest": "^6.2.2"
   },
   "engines": {
     "node": "12.x"

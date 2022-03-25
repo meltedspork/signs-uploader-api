@@ -11,8 +11,6 @@ const jwt = require('express-jwt');
 const jwtAuthz = require('express-jwt-authz');
 const jwksRsa = require('jwks-rsa');
 
-const { esClient } = require('./config/elasticsearch.config');
-
 // GraphQL
 const { graphqlHTTP } = require('express-graphql');
 const graphql = require('./graphql');
@@ -22,13 +20,16 @@ const {
   getError,
   UNAUTHORIZED,
   FORBIDDEN,
-} = require('./utilities/error');
+} = require('./services/error.service');
 
-const { sequelize } = require('./config/sequelize.config');
 const models = require('./models');
 
 const firebaseAdmin = require('./config/firebase-admin.config');
 const firebase = require('./config/firebase.config');
+
+const configRoute = require('./routes/config.route');
+const statusRoute = require('./routes/status.route');
+const { index, hello } = require('./demo');
  
 var app = express();
 app.set('trust proxy', 'loopback');
@@ -67,26 +68,10 @@ const checkJwt = jwt({
   algorithms: process.env.AUTH0_SERVER_ALGORITHMS.split(','),
 });
 
-app.get('/', (_req, res) => res.send({
-  server: 'Hello World!',
-}));
+app.get('/', index);
+app.get('/hello/:name', hello);
 
-app.get('/es', (_req, res) => {
-  esClient.cluster.health({}, (err, resp, status) => {
-    res.send({
-      err,
-      resp,
-      status,
-    });
-  });
-});
-
-app.get('/config.json', (_req, res) => res.send({
-  audience: process.env.AUTH0_CLIENT_AUDIENCE,
-  client_id: process.env.AUTH0_CLIENT_CLIENT_ID,
-  domain: process.env.AUTH0_CLIENT_DOMAIN,
-  redirect_uri: process.env.AUTH0_CLIENT_REDIRECT_URI,
-}));
+app.use(configRoute);
 
 if (process.env.NODE_ENV === 'production') {
   app.post(
@@ -167,25 +152,7 @@ if (process.env.NODE_ENV === 'production') {
   );
 }
 
-app.get('/test_db', async (_req, res) => {
-  let authenticateObject = {
-    env: process.env.NODE_ENV,
-  };
-
-  try {
-    await sequelize.authenticate();
-    Object.assign(authenticateObject, {
-      connect: true,
-    });
-  } catch (error) {
-    Object.assign(authenticateObject, {
-      connect: false,
-      error,
-    });
-  }
-
-  res.send(authenticateObject);
-});
+app.use(statusRoute);
 
 app.use(checkJwt);
 

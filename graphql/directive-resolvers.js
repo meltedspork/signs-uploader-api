@@ -1,4 +1,4 @@
-const { FORBIDDEN } = require('../utilities/error');
+const { FORBIDDEN } = require('../services/error.service');
 
 const directiveResolvers = {
   async hasScope (next, _source, { scope }, { permissions }) {
