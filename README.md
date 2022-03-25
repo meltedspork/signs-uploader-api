@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/github/meltedspork/signs-uploader-api.svg?style=svg)](https://app.circleci.com/pipelines/github/meltedspork/signs-uploader-api)
+
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
