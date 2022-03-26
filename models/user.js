@@ -50,7 +50,6 @@ module.exports = (sequelize) => {
             'email',
             'createdAt',
             'updatedAt',
-            'file_name',
           ],
         },
       },

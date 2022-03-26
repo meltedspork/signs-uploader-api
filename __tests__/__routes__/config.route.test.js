@@ -6,7 +6,7 @@ const router = require('../../routes/config.route');
 const app = new express();
 app.use('/', router);
 
-describe('/config.json', function () {
+describe('GET /config.json', function () {
   test('responds with auth0 object', async () => {
     const res = await request(app).get('/config.json');
 

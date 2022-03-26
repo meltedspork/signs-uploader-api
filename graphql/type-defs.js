@@ -6,6 +6,10 @@ const typeDefs = gql`
   scalar Upload
   scalar UUID
 
+  type Status {
+    alive: Boolean
+  }
+
   type Sign {
     uid: UUID!
     definition: String
@@ -41,6 +45,8 @@ const typeDefs = gql`
   }
 
   type Query {
+    viewStatus: Status @hasScope(scope: ["read:signs"])
+
     viewSign(uid: UUID!): SignForm! @hasScope(scope: ["read:signs"])
     viewSigns(page: Int, size: Int): [Sign!]! @hasScope(scope: ["read:signs"])
 

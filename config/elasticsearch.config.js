@@ -1,12 +1,13 @@
 require('dotenv').config();
 const elasticsearch = require('@elastic/elasticsearch');
+const logService = require('../services/log.service');
 
-const node = process.env.SEARCHBOX_URL;
-
-var client = new elasticsearch.Client({ node });
+var client = new elasticsearch.Client({
+  node: process.env.SEARCHBOX_URL
+});
 
 client.cluster.health({}, (err, resp, status) => { 
-  console.log('elasticsearch health: ', {
+  logService.warn('elasticsearch health: ', {
     err,
     resp,
     status,
@@ -16,7 +17,7 @@ client.cluster.health({}, (err, resp, status) => {
 client.indices.create({
   index: 'signs',
 }, (err, resp, status) => {
-  console.log('elasticsearch indexed for "signs": ', {
+  logService.warn('elasticsearch indexed for "signs": ', {
     err,
     resp,
     status,
@@ -48,7 +49,7 @@ client.indices.putMapping({
     },
   },
 }, (err, resp, status) => {
-  console.log('elasticsearch mapping for "signs": ', {
+  logService.warn('elasticsearch mapping for "signs": ', {
     err,
     resp,
     status,

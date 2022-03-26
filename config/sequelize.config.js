@@ -1,5 +1,6 @@
 require('dotenv').config();
 const Sequelize = require('sequelize');
+const logService = require('../services/log.service');
 
 let postgresOptions = {
   url: process.env.DATABASE_URL,
@@ -28,9 +29,9 @@ const sequelize = new Sequelize(
 (async() => {
   try {
     await sequelize.authenticate();
-    console.log('@!@!@!@! Sequelize authenticate has been established successfully.');
+    logService.info('@!@!@!@! Sequelize authenticate has been established successfully.');
   } catch (error) {
-    console.log('@!@!@!@! Unable to authenticate to the database:', error);
+    logService.error('@!@!@!@! Unable to authenticate to the database:', error);
   }
 })();
 

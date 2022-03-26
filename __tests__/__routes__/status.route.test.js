@@ -11,7 +11,7 @@ app.use('/', router);
 jest.mock('../../config/elasticsearch.config', () => ({
   esClient: {
     cluster: {
-      health: async () => Promise.resolve({
+      health: () => Promise.resolve({
         body: {
           status: 'green',
         },
@@ -23,11 +23,11 @@ jest.mock('../../config/elasticsearch.config', () => ({
 
 jest.mock('../../config/sequelize.config', () => ({
   sequelize: {
-    authenticate: async () => Promise.resolve(true),
+    authenticate: () => Promise.resolve(true),
   }
 })); 
 
-describe('/status', function () {
+describe('GET /status', function () {
   test('when in good status', async () => {
     const res = await request(app).get('/status');
 
@@ -48,11 +48,11 @@ describe('/status', function () {
   test('when in bad status', async () => {
     elasticsearchConfig.esClient = {
       cluster: {
-        health: async () => Promise.reject('ELASTICSEARCH ERROR'),
+        health: () => Promise.reject('ELASTICSEARCH ERROR'),
       }
     }
     sequelizeConfig.sequelize = {
-      authenticate: async () => Promise.reject('DATABASE ERROR'),
+      authenticate: () => Promise.reject('DATABASE ERROR'),
     }
 
     const res = await request(app).get('/status');

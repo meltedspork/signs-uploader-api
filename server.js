@@ -23,6 +23,7 @@ const {
   UNAUTHORIZED,
   FORBIDDEN,
 } = require('./services/error.service');
+const logService = require('./services/log.service');
 
 // const models = require('./models');
 
@@ -127,31 +128,31 @@ app.use(checkJwtMiddleware);
 // });
 
 app.use((err, req, res, next) => {
-  console.log('error: res', res);
-  console.log('error: req', req);
-  console.log('error: next', next);
-  console.log('error: err', err);
+  logService.error('res', res);
+  logService.error('req', req);
+  logService.error('next', next);
+  logService.error('err', err);
 
-  let erroType = null;
+  let errorType = null;
   if (err.name && err.name === 'UnauthorizedError') {
-    erroType = UNAUTHORIZED;
+    errorType = UNAUTHORIZED;
   } else if (err.message && err.message === 'Insufficient scope') {
-    erroType = FORBIDDEN;
+    errorType = FORBIDDEN;
   } else {
     return next(err, req, res);
   }
   const {
     statusCode: errorStatusCode,
     message: errorMessage,
-  } = getError(erroType);
+  } = getError(errorType);
   return res.status(errorStatusCode).send({
-    code: erroType,
+    code: errorType,
     message: errorMessage,
   });
 });
 
 if (process.env.NODE_ENV === 'production') {
-  app.listen(process.env.PORT, () => console.log(`Running a GraphQL API server at ${process.env.PORT}`));
+  app.listen(process.env.PORT, () => logService.info(`Running a GraphQL API server at ${process.env.PORT}`));
 } else {
   const fs = require('fs');
   const https = require('https');
@@ -159,6 +160,6 @@ if (process.env.NODE_ENV === 'production') {
   const cert = fs.readFileSync('localhost.pem', 'utf-8');
 
   https.createServer({ key, cert }, app).listen(process.env.PORT, '0.0.0.0', () => {
-    console.log(`Running a GraphQL API server at HTTPS:${process.env.PORT}`);
+    logService.info(`Running a GraphQL API server at HTTPS:${process.env.PORT}`);
   });
 }

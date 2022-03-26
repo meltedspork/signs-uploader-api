@@ -1,3 +1,5 @@
+const logService = require('./log.service');
+
 const errorTypes = {
   FORBIDDEN: 'FORBIDDEN',
   UNAUTHORIZED: 'UNAUTHORIZED',
@@ -15,7 +17,7 @@ const allErrors = {
 }
 
 const getError = errorName => {
-  console.log('getError: errorName', errorName);
+  logService.error('getError: errorName', errorName);
   return allErrors[errorName] || {
     message: errorName,
     statusCode: 500,
