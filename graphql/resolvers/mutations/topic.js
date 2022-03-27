@@ -1,5 +1,7 @@
+const models = require('../../../models');
+
 const topicMutations = {
-  async createTopic (_root, { topicInput }, { models, user }) {
+  async createTopic (_root, { topicInput }, { user }) {
     const {
       name,
     } = topicInput;
@@ -11,7 +13,7 @@ const topicMutations = {
 
     return topicCreated;
   },
-  async updateTopic (_root, { uid, topicInput }, { models, user }) {
+  async updateTopic (_root, { uid, topicInput }) {
     const {
       name: nameInput,
     } = topicInput;

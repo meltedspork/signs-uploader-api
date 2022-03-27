@@ -48,7 +48,6 @@ router.post(
       context: {
         res,
         headers,
-        models,
         user,
         permissions,
         session,

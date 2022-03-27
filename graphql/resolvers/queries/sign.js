@@ -1,8 +1,9 @@
 const { esClient } = require('../../../config/elasticsearch.config');
+const models = require('../../../models');
 const { signUrl } = require('../../../services/aws-s3-sign');
 
 const signQueries = {
-  async viewSign (_root, { uid }, { session, models, user }) {
+  async viewSign (_root, { uid }, { session }) {
     const {
       definition,
       name,

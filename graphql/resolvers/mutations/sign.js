@@ -1,9 +1,9 @@
-const { sequelize } = require('../../../models');
+const models = require('../../../models');
 const { uploadToBucket } = require('../../../services/aws-s3-sign');
 const { saveSignDocument, updateSignDocument } = require('../../../services/elasticsearch-index-sign');
 
 const signMutations = {
-  async createSign (_root, { signInput }, { models, user }) {
+  async createSign (_root, { signInput }, { user }) {
     const {
       videoFile,
       name,
@@ -11,7 +11,7 @@ const signMutations = {
       definition,
     } = signInput;
     console.log('videoFilevideoFilevideoFile', videoFile);
-    const transaction = await sequelize.transaction()
+    const transaction = await models.sequelize.transaction()
 
     try {
       const signCreated = await models.Sign.create({
@@ -54,7 +54,7 @@ const signMutations = {
       throw err;
     }
   },
-  async updateSign (_root, { uid, signInput }, { models, user }) {
+  async updateSign (_root, { uid, signInput }) {
     console.log('signInput', signInput);
     const {
       name: nameInput,

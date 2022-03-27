@@ -1,5 +1,7 @@
+const models = require('../../../models');
+
 const topicQueries = {
-  async viewTopic (_root, { uid }, { models }) {
+  async viewTopic (_root, { uid }) {
     const {
       name,
     } = await models.Topic.findOne({
