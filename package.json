@@ -13,7 +13,7 @@
     "dev:rebuild": "docker-compose down && docker-compose up --build",
     "es:reindex": "docker-compose exec server node scripts/reindexElasticsearchForSigns.js",
     "db:generate": "npx sequelize-cli migration:generate ---name $NAME ---attributes $ATTRIBUTES",
-    "db:migrate": "npx sequelize db:migrate",
+    "db:migrate": "npx sequelize-cli db:migrate",
     "start": "node server.js",
     "start:dev": "nodemon server.js",
     "heroku-prebuild": "npm run db:migrate",

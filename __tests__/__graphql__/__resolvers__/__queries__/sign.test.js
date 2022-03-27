@@ -8,7 +8,7 @@
 //   uid: 'foobar-001',
 // };
 
-
+// let contexts = {};
 
 // let obj = {
 //   models: {
