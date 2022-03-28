@@ -16,7 +16,6 @@
     "db:migrate": "npm sequelize-cli db:migrate",
     "start": "node server.js",
     "start:dev": "nodemon server.js",
-    "heroku-postbuild": "sequelize db:migrate",
     "lint": "eslint .",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "seed:user": "docker-compose exec server node scripts/connectAuthenticationUserToAppUser.js $1 $2 $3"
