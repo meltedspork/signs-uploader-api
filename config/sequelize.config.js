@@ -12,7 +12,7 @@ let postgresOptions = {
 };
 
 if (process.env.NODE_ENV === 'production') {
-  Object.assign(defaultOptions, {
+  Object.assign(postgresOptions, {
     dialectOptions: {
       ssl: {
         rejectUnauthorized: false,
