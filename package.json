@@ -9,7 +9,7 @@
     "psql": "heroku pg:psql -a signs-uploader-api",
     "ps": "heroku ps -a signs-uploader-api",
     "dev:chrome": "open -a \"Google Chrome\" https://local.auth:4000",
-    "dev": "npm run dev:chrome && docker-compose down && docker-compose up",
+    "dev": "docker-compose down && docker-compose up",
     "dev:rebuild": "docker-compose down && docker-compose up --build",
     "es:reindex": "docker-compose exec server node scripts/reindexElasticsearchForSigns.js",
     "db:generate": "npm sequelize-cli migration:generate ---name $NAME ---attributes $ATTRIBUTES",
@@ -22,7 +22,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@elastic/elasticsearch": "^7.16.0",
+    "@elastic/elasticsearch": "8.1.0",
     "apollo-server-express": "^2.22.2",
     "auth0": "^2.34.0",
     "aws-sdk": "^2.868.0",
