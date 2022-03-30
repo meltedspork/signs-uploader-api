@@ -1,5 +1,5 @@
 require('dotenv').config();
-const elasticsearch = require('@elastic/elasticsearch');
+const elasticsearch = require('elasticsearch');
 const logService = require('../services/log.service');
 
 var client = new elasticsearch.Client({
