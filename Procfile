@@ -1,2 +1,2 @@
-release: npx sequelize db:migrate --config sequelize-config.js
+release: npm run release
 web: node server.js

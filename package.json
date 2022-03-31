@@ -15,6 +15,9 @@
     "db:generate": "npx sequelize-cli migration:generate ---name $NAME ---attributes $ATTRIBUTES",
     "db:migrate": "docker-compose exec server npx sequelize db:migrate --config sequelize-config.js",
     "start:dev": "nodemon server.js",
+    "release:migrate": "npx sequelize db:migrate --config sequelize-config.js",
+    "release:reindex": "node scripts/reindexElasticsearchForSigns.js", 
+    "release": "npm run release:migrate && npm run release:reindex",
     "lint": "eslint .",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "seed:user": "docker-compose exec server node scripts/connectAuthenticationUserToAppUser.js $1 $2 $3"

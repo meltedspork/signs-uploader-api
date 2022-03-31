@@ -35,9 +35,7 @@ const _buildDocumentObject = async (sign) => {
   const docObj = {
     index: INDEX_NAME,
     id: parsedSerialized.uid,
-    body: {
-      doc: parsedSerialized,
-    },
+    body: parsedSerialized,
   };
 
   console.log('elasticsearch sign index: docObj', docObj);
