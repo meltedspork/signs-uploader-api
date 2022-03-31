@@ -47,7 +47,7 @@ const typeDefs = gql`
   type Query {
     viewStatus: Status @hasScope(scope: ["read:signs"])
 
-    viewSign(uid: UUID!): SignForm! @hasScope(scope: ["read:signs"])
+    viewSign(uid: UUID): SignForm! @hasScope(scope: ["read:signs"])
     viewSigns(page: Int, size: Int): [Sign!]! @hasScope(scope: ["read:signs"])
 
     viewTopic(uid: UUID!): Topic! @hasScope(scope: ["read:signs"])

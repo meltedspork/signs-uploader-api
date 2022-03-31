@@ -1,4 +1,5 @@
-const models = require('../../../models');
+const { Topic } = require('../../../models');
+const snakeCase = require('lodash/snakeCase');
 
 const topicMutations = {
   async createTopic (_root, { topicInput }, { user }) {
@@ -6,8 +7,9 @@ const topicMutations = {
       name,
     } = topicInput;
 
-    const topicCreated = await models.Topic.create({
+    const topicCreated = await Topic.create({
       name,
+      value: snakeCase(name),
       user_id: user.id,
     });
 
@@ -17,7 +19,7 @@ const topicMutations = {
     const {
       name: nameInput,
     } = topicInput;
-    const updatedTopic = await models.Topic.update({
+    const updatedTopic = await Topic.update({
       name: nameInput,
     }, {
       where: {

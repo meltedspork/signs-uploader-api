@@ -43,6 +43,7 @@ router.get('/status', async (_req, res) => {
       },
     });
   } catch (error) {
+    console.log('!!!! errorerrorerror', error);
     Object.assign(authenticateObject, {
       elasticsearch: {
         status: false,

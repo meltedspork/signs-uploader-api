@@ -1,4 +1,9 @@
-const models = require('../../../models');
+const {
+  sequelize,
+  Sign,
+  Topic,
+  Video,
+} = require('../../../models');
 const { uploadToBucket } = require('../../../services/aws-s3-sign');
 const { saveSignDocument, updateSignDocument } = require('../../../services/elasticsearch-index-sign');
 
@@ -11,10 +16,10 @@ const signMutations = {
       definition,
     } = signInput;
     console.log('videoFilevideoFilevideoFile', videoFile);
-    const transaction = await models.sequelize.transaction()
+    const transaction = await sequelize.transaction()
 
     try {
-      const signCreated = await models.Sign.create({
+      const signCreated = await Sign.create({
         name,
         pronounce,
         definition,
@@ -35,7 +40,7 @@ const signMutations = {
           const uploadedToBucket = await uploadToBucket(videoFileStreamed, filename);
           console.log('uploadedToBucket _______>', uploadedToBucket);
 
-          const videoCreated = await models.Video.create({
+          const videoCreated = await Video.create({
             title,
             file_name: filename,
             user_id: user.id,
@@ -47,6 +52,9 @@ const signMutations = {
         }
       }
       await transaction.commit();
+
+      saveSignDocument(signCreated);
+
       return signCreated;
     } catch(e) {
       console.log('Rolling back: ', err);
@@ -66,7 +74,7 @@ const signMutations = {
     console.log('topicInputs', topicInputs);
 
     try {
-      const updatedSign = await models.Sign.update({
+      const updatedSign = await Sign.update({
         name: nameInput,
         pronounce: pronounceInput,
         definition: definitionInput,
@@ -75,7 +83,7 @@ const signMutations = {
           uid,
         },
         include: [
-          models.Topic,
+          Topic,
         ],
         returning: true,
         plain: true,
@@ -84,7 +92,7 @@ const signMutations = {
       await updatedSign[1].setTopics(
         await Promise.all(
           topicInputs.map(async (uid) => {
-            return await models.Topic.findByUid(uid);
+            return await Topic.findByUid(uid);
           })
         ),
         { transaction },
@@ -95,7 +103,7 @@ const signMutations = {
       // console.log('-------______updatedSign[1]', updatedSign[1]);
       console.log('-------______updatedSign', updatedSign)
 
-      await updateSignDocument(updatedSign[1], models);
+      await updateSignDocument(updatedSign[1]);
 
       const {
         definition,

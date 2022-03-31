@@ -4,52 +4,57 @@ const { signUrl } = require('../../../services/aws-s3-sign');
 
 const signQueries = {
   async viewSign (_root, { uid }, { session }) {
-    const {
-      definition,
-      name,
-      pronounce,
-      state,
-      topics,
-      videos,
-    } = await models.Sign.findOne({
-      where: { uid },
-      include: [
-        'topics',
-        'videos',
-      ],
-    });
+    let signForm = {};
 
-    videoUrls = videos.map((video) => {
+    if (uid) {
       const {
-        metadata: {
-          key,
-        }
-      } = video;
-      const fileName = key.split('.')[0];
-      return signUrl(`${fileName}.gif`);
-    });
-
-    const fileName = '795eb62a-696e-4973-857d-8fc28be480cf';
-    const videoUrl = signUrl(`${fileName}_k8s.gif`);
-    videoUrls.push(videoUrl);
-    console.log('-------______videoUrls', videoUrls);
-
-    const allTopics = await models.Topic.findAll();
-
-    const signForm = {
-      sign: {
-        name,
         definition,
+        name,
         pronounce,
         state,
-        topics, //: topics.map(({ name, value }) => ({ name, value, })).flat(),
-        videoUrls,
-      },
-      topics: allTopics,
-    };
-    console.log('signForm:', signForm);
+        topics,
+        videos,
+      } = await models.Sign.findOne({
+        where: { uid },
+        include: [
+          'topics',
+          'videos',
+        ],
+      });
 
-    console.log('------->>>>> session', session);
+      videoUrls = videos.map((video) => {
+        const {
+          metadata: {
+            key,
+          }
+        } = video;
+        const fileName = key.split('.')[0];
+        return signUrl(`${fileName}.gif`);
+      });
+
+      const fileName = '795eb62a-696e-4973-857d-8fc28be480cf';
+      const videoUrl = signUrl(`${fileName}_k8s.gif`);
+      videoUrls.push(videoUrl);
+      console.log('-------______videoUrls', videoUrls);
+
+      Object.assign(signForm, {
+        sign: {
+          name,
+          definition,
+          pronounce,
+          state,
+          topics, //: topics.map(({ name, value }) => ({ name, value, })).flat(),
+          videoUrls,
+        },
+      });
+    }
+
+    const allTopics = await models.Topic.findAll();
+    Object.assign(signForm, {
+      topics: allTopics,
+    });
+
+    console.log('signForm:', signForm);
     return signForm;
   },
   async viewSigns (_root, args, { res }) {
@@ -58,12 +63,10 @@ const signQueries = {
       size: limit = 15,
     } = args;
     const offset = (page - 1) * limit;
-  
-    const {
-      body: {
-        hits,
-      }
-    } = await esClient.search({
+    let totalValue = 0;
+    let signs = [];
+    
+    const results = await esClient.search({
       body: {
         from: offset,
         size: limit,
@@ -73,27 +76,31 @@ const signQueries = {
         ],
       }
     });
-    console.log('hits:', hits);
-    const {
-      total,
-      hits: results,
-    } = hits;
-    const signs = results.map(({
-      _id: uid,
-      _source: {
-        name,
-        state,
-      }
-    }) => {
-      return {
-        uid,
-        name,
-        state,
-      }
-    });
-    console.log('signs:', signs);
+    if (!!results && !!results.hits) {
+      const {
+        hits: {
+          total,
+          hits,
+        },
+      } = results;
+      totalValue = total.value;
+      signs = hits.map(({
+        _id: uid,
+        _source: {
+          name,
+          state,
+        }
+      }) => {
+        return {
+          uid,
+          name,
+          state,
+        }
+      });
+      console.log('signs:', signs);
+    }
 
-    res.header('X-Pagination-Total', total.value);
+    res.header('X-Pagination-Total', totalValue);
     res.header('X-Pagination-Page', page);
     res.header('X-Pagination-Size', limit);
 

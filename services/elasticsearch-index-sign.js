@@ -2,7 +2,13 @@ const { esClient } = require('../config/elasticsearch.config');
 
 const INDEX_NAME = 'signs';
 
-const _buildDocumentObject = async (sign, { Sign, Topic, User, Video }) => {
+const _buildDocumentObject = async (sign) => {
+  const {
+    Sign,
+    Topic,
+    User,
+    Video,
+  } = require('../models');
   const serialized = await Sign.scope('serialize').findByPk(sign.id, {
     include: [
       {
@@ -23,10 +29,15 @@ const _buildDocumentObject = async (sign, { Sign, Topic, User, Video }) => {
     ],
   });
 
+  const parsedSerialized = serialized.toJSON();
+  console.log('elasticsearch sign index: parsedSerialized', parsedSerialized);
+
   const docObj = {
     index: INDEX_NAME,
-    id: sign.uid,
-    body: serialized.toJSON(),
+    id: parsedSerialized.uid,
+    body: {
+      doc: parsedSerialized,
+    },
   };
 
   console.log('elasticsearch sign index: docObj', docObj);
@@ -34,27 +45,30 @@ const _buildDocumentObject = async (sign, { Sign, Topic, User, Video }) => {
   return docObj;
 }
 
-const saveSignDocument = async (sign, models) => {
+const saveSignDocument = async (sign) => {
   console.log('elasticsearch sign index: saveSignDocument: Start');
 
-  const docObj = await _buildDocumentObject(sign, models);
+  const docObj = await _buildDocumentObject(sign);
 
   esClient.create(docObj).then((result) => {
-    console.log('elasticsearch sign index: saveSignDocument: docObj', docObj.toJSON());
+    console.log('elasticsearch sign index: saveSignDocument: docObj', JSON.stringify(docObj));
     console.log('elasticsearch sign index: saveSignDocument: result', result);
   });
 
   console.log('elasticsearch sign index: saveSignDocument: End');
 }
 
-const updateSignDocument = async (sign, models) => {
+const updateSignDocument = async (sign) => {
   console.log('elasticsearch sign index: updateSignDocument: Start');
 
-  docObj = await _buildDocumentObject(sign, models);
+  docObj = await _buildDocumentObject(sign);
 
   esClient.update(docObj).then((result) => {
-    console.log('elasticsearch sign index: updateSignDocument: docObj', docObj.toJSON());
+    console.log('elasticsearch sign index: updateSignDocument: docObj', JSON.stringify(docObj));
     console.log('elasticsearch sign index: updateSignDocument: result', result);
+  }).catch((error) => {
+    console.log('elasticsearch sign index: updateSignDocument: error', error);
+    saveSignDocument(sign);
   });
 
   console.log('elasticsearch sign index: updateSignDocument: End');
