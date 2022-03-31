@@ -76,11 +76,14 @@ const signQueries = {
         ],
       }
     });
-    if (!!results && !!results.hits) {
+    console.log('results----->>>', results);
+    if (!!results && !!results.body && !!results.body.hits) {
       const {
-        hits: {
-          total,
-          hits,
+        body: {
+          hits: {
+            total,
+            hits,
+          },
         },
       } = results;
       totalValue = total.value;
