@@ -3,9 +3,9 @@ require('dotenv').config();
 const { graphqlUploadExpress } = require('graphql-upload');
 const { graphqlHTTP } = require('express-graphql');
 
-const checkJwtMiddleware = require('../middlewares/check-jwt.middleware');
+// const checkJwtMiddleware = require('../middlewares/check-jwt.middleware');
 const graphql = require('../graphql');
-const models = require('../models');
+const { User } = require('../models');
 
 const {
   getError,
@@ -16,9 +16,11 @@ const logService = require('../services/log.service');
 const express = require('express');
 const router = express.Router();
 
-router.post(
+const isProduction = process.env.NODE_ENV === 'production';
+
+router.use(
   '/graphql',
-  checkJwtMiddleware,
+  // checkJwtMiddleware,
   // jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}),
   graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
   graphqlHTTP(async (req, res, graphQLParams) => {
@@ -26,29 +28,29 @@ router.post(
     logService.warn('req.headers ---->>>>_____', req.headers);
     logService.warn('req.user ---->>>>_____', req.user);
     const {
-      user: {
-        sub: idProviderUserId,
-        permissions,
-      },
+      user,
       headers,
       session,
     } = req;
-    logService.warn('req.idProviderUserId ---->>>>_____', idProviderUserId);
-    logService.warn('models ---->>>>_____', models);
-    logService.warn('models.User ---->>>>_____', models.User);
-    logService.warn('models.User.findOne ---->>>>_____', models.User.findOne());
-    const user = await models.User.findOne({ where: { idProviderUserId } });
-    logService.warn('user ---->>>>_____', user);
-    if (!user || !user.idProviderUserId) {
-      throw new Error(UNAUTHORIZED);
+    logService.warn('User ---->>>>_____', User);
+    logService.warn('User.findOne ---->>>>_____', User.findOne());
+    const permissions = (user && user.permissions) ? user.permissions : [];
+    const idProviderUserId = (user && user.sub) ? user.sub : (isProduction ? null : 'TestUser');
+
+    let userFound = {};
+    if (!isProduction && idProviderUserId !== 'TestUser') {
+      userFound = await models.User.findOne({ where: { idProviderUserId } });
+      if (!userFound || !userFound.idProviderUserId) {
+        throw new Error(UNAUTHORIZED);
+      }
     }
     return {
       schema: graphql,
-      graphiql: (process.env.NODE_ENV !== 'production'),
+      graphiql: !isProduction,
       context: {
         res,
         headers,
-        user,
+        user: userFound,
         permissions,
         session,
       },

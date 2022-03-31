@@ -9,23 +9,14 @@ const FirebaseStore = require('connect-session-firebase')(expressSession);
 const checkJwtMiddleware = require('./middlewares/check-jwt.middleware');
 
 // Auth0 deps
-// const jwt = require('express-jwt');
 const jwtAuthz = require('express-jwt-authz');
-// const jwksRsa = require('jwks-rsa');
 
-// GraphQL
-// const { graphqlHTTP } = require('express-graphql');
-// const graphql = require('./graphql');
-// const { graphqlUploadExpress } = require('graphql-upload');
-// const unlessGraphqliAndIsNonProduction = require('./middlewares/unless-graphqli-and-is-non-production');
 const {
   getError,
   UNAUTHORIZED,
   FORBIDDEN,
 } = require('./services/error.service');
 const logService = require('./services/log.service');
-
-// const models = require('./models');
 
 const firebaseAdmin = require('./config/firebase-admin.config');
 const firebase = require('./config/firebase.config');
@@ -71,15 +62,12 @@ app.use(expressSession({
 //   algorithms: process.env.AUTH0_SERVER_ALGORITHMS.split(','),
 // });
 
-// app.use(checkJwtMiddleware);
-
 app.use(configRoute);
 
-app.use(graphqlRoute);
-// app.use(checkJwtMiddleware, statusRoute);
-app.use(statusRoute);
-
 app.use(checkJwtMiddleware);
+
+app.use(graphqlRoute);
+app.use(statusRoute);
 
 // app.get('/test_jwt', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
 //   const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
