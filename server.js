@@ -50,35 +50,27 @@ app.use(expressSession({
   secure: true,
 }));
 
-// const checkJwt = jwt({
-//   secret: jwksRsa.expressJwtSecret({
-//     cache: true,
-//     rateLimit: true,
-//     jwksRequestsPerMinute: 5,
-//     jwksUri: process.env.AUTH0_SERVER_JWKS_URI,
-//   }),
-//   audience: process.env.AUTH0_CLIENT_AUDIENCE,
-//   issuer: process.env.AUTH0_SERVER_ISSUER,
-//   algorithms: process.env.AUTH0_SERVER_ALGORITHMS.split(','),
-// });
-
 app.use(configRoute);
 
-app.use(checkJwtMiddleware);
-
-app.use(graphqlRoute);
 app.use(statusRoute);
 
-// app.get('/test_jwt', jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}), async (req, res) => {
-//   const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
-//   req.session.firebaseToken = firebaseToken;
+app.use(checkJwtMiddleware);
+app.use(graphqlRoute);
 
-//   if (process.env.NODE_ENV === 'production') {
-//     res.send({ status: ok });
-//   } else {
-//     res.send({ firebaseToken });
-//   }
-// });
+
+app.get('/test_jwt', /*jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}),*/ async (req, res) => {
+  console.log('req.headers', req.headers);
+
+  // const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
+  // req.session.firebaseToken = firebaseToken;
+
+  // if (process.env.NODE_ENV === 'production') {
+  //   res.send({ status: ok });
+  // } else {
+  //   res.send({ firebaseToken });
+  // }
+  res.send({ ok: 'ok' });
+});
 
 // const getData = async () => {
 //   const snapshot = await firebase.firestore().collection('foobars').get();
@@ -116,10 +108,10 @@ app.use(statusRoute);
 // });
 
 app.use((err, req, res, next) => {
-  logService.error('res', res);
-  logService.error('req', req);
-  logService.error('next', next);
-  logService.error('err', err);
+  // logService.error('res', res);
+  // logService.error('req', req);
+  // logService.error('next', next);
+  // logService.error('err', err);
 
   let errorType = null;
   if (err.name && err.name === 'UnauthorizedError') {

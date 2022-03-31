@@ -2,8 +2,8 @@ require('dotenv').config();
 
 const { graphqlUploadExpress } = require('graphql-upload');
 const { graphqlHTTP } = require('express-graphql');
+// const jwtAuthz = require('express-jwt-authz');
 
-// const checkJwtMiddleware = require('../middlewares/check-jwt.middleware');
 const graphql = require('../graphql');
 const { User } = require('../models');
 
@@ -20,7 +20,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 router.use(
   '/graphql',
-  // checkJwtMiddleware,
   // jwtAuthz(['read:signs'], {failWithError: true, checkAllScopes: true}),
   graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 }),
   graphqlHTTP(async (req, res, graphQLParams) => {
@@ -34,12 +33,15 @@ router.use(
     } = req;
     logService.warn('User ---->>>>_____', User);
     logService.warn('User.findOne ---->>>>_____', User.findOne());
-    const permissions = (user && user.permissions) ? user.permissions : [];
-    const idProviderUserId = (user && user.sub) ? user.sub : (isProduction ? null : 'TestUser');
-
+    let permissions = (user && user.permissions) ? user.permissions : [];
+    let idProviderUserId = (user && user.sub) ? user.sub : null;
+    logService.warn('idProviderUserId ---->>>>_____', idProviderUserId);
     let userFound = {};
-    if (!isProduction && idProviderUserId !== 'TestUser') {
-      userFound = await models.User.findOne({ where: { idProviderUserId } });
+    if (!isProduction && !idProviderUserId) {
+      idProviderUserId = 'TestUser';
+      permissions = ['read:signs', 'write:signs'];
+    } else {
+      userFound = await User.findOne({ where: { idProviderUserId } });
       if (!userFound || !userFound.idProviderUserId) {
         throw new Error(UNAUTHORIZED);
       }

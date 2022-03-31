@@ -1,10 +1,15 @@
 require('dotenv').config();
 
-const sequelizeConfig = require('../config/sequelize.config');
-const elasticsearchConfig = require('../config/elasticsearch.config');
-
 const express = require('express');
 const router = express.Router();
+
+const sequelizeConfig = require('../config/sequelize.config');
+const elasticsearchConfig = require('../config/elasticsearch.config');
+const checkJwtMiddleware = require('../middlewares/check-jwt.middleware');
+
+if (process.env.NODE_ENV === 'production') {
+  router.use(checkJwtMiddleware);
+}
 
 router.get('/status', async (_req, res) => {
   let authenticateObject = {
