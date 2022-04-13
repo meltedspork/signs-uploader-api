@@ -17,13 +17,19 @@ const typeDefs = gql`
     pronounce: String
     state: String
     topics: [Topic]
-    videoUrls: [String]
+    videos: [Video]
   }
 
   type Topic {
     uid: UUID
     name: String
     value: String
+  }
+
+  type Video {
+    uid: UUID
+    title: String
+    src: String
   }
 
   type SignForm {
@@ -60,6 +66,8 @@ const typeDefs = gql`
 
     createTopic(topicInput: TopicInput): Topic @hasScope(scope: ["write:signs"])
     updateTopic(uid: UUID!, topicInput: TopicInput): Topic @hasScope(scope: ["write:signs"])
+
+    deleteVideo(uid: UUID!, signUid: UUID!): Sign @hasScope(scope: ["write:signs"])
   }
 `;
 

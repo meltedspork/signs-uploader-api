@@ -1,4 +1,4 @@
-const { Topic } = require('../../../models');
+const { Topic } = require('../../models');
 
 const topicQueries = {
   async viewTopic (_root, { uid }) {

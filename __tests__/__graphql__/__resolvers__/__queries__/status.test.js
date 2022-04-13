@@ -1,4 +1,4 @@
-const statusQueries = require('../../../../graphql/resolvers/queries/status');
+const statusQueries = require('../../../../graphql/resolvers/status.query');
 
 describe('Status Queries', function () {
   test('viewStatus', async () => {

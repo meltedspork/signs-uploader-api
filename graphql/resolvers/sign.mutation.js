@@ -3,12 +3,13 @@ const {
   Sign,
   Topic,
   Video,
-} = require('../../../models');
-const { uploadToBucket } = require('../../../services/aws-s3-sign');
-const { saveSignDocument, updateSignDocument } = require('../../../services/elasticsearch-index-sign');
+} = require('../../models');
+const { videoUpload } = require('../../services/video-pipeline-service');
+const { saveSignDocument, updateSignDocument } = require('../../services/elasticsearch-index-sign');
 
 const signMutations = {
   async createSign (_root, { signInput }, { user }) {
+    const { id: userId } = user;
     const {
       videoFile,
       name,
@@ -16,41 +17,20 @@ const signMutations = {
       definition,
     } = signInput;
     console.log('videoFilevideoFilevideoFile', videoFile);
-    const transaction = await sequelize.transaction()
+    let transaction = await sequelize.transaction()
 
     try {
       const signCreated = await Sign.create({
         name,
         pronounce,
         definition,
-        user_id: user.id,
+        user_id: userId,
       }, { transaction });
 
-      if (videoFile) {
-        const videoFilePipedIn = await videoFile;
-        const {
-          filename,
-          createReadStream,
-        } = videoFilePipedIn || {};
-        if (filename) {
-          console.log('filename _______>', filename);
-          const videoFileStreamed = createReadStream();
-          console.log('filed _______>', videoFileStreamed);
+      // if (videoFile) {
+        transaction = videoUpload(videoFile, transaction, userId, signCreated.id);
+      // }
 
-          const uploadedToBucket = await uploadToBucket(videoFileStreamed, filename);
-          console.log('uploadedToBucket _______>', uploadedToBucket);
-
-          const videoCreated = await Video.create({
-            title,
-            file_name: filename,
-            user_id: user.id,
-            sign_id: signCreated.id,
-            metadata: uploadedToBucket,
-          }, { transaction });
-
-          console.log('videoCreated!!!!!! ---', videoCreated);
-        }
-      }
       await transaction.commit();
 
       saveSignDocument(signCreated);
@@ -84,6 +64,7 @@ const signMutations = {
         },
         include: [
           Topic,
+          Video,
         ],
         returning: true,
         plain: true,

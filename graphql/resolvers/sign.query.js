@@ -1,9 +1,9 @@
-const { esClient } = require('../../../config/elasticsearch.config');
-const models = require('../../../models');
-const { signUrl } = require('../../../services/aws-s3-sign');
+const { esClient } = require('../../config/elasticsearch.config');
+const models = require('../../models');
+const { signUrl } = require('../../services/aws-s3-sign');
 
 const signQueries = {
-  async viewSign (_root, { uid }, { session }) {
+  async viewSign (_root, { uid }) {
     let signForm = {};
 
     if (uid) {
@@ -22,20 +22,29 @@ const signQueries = {
         ],
       });
 
-      videoUrls = videos.map((video) => {
+      vids = videos.map((video) => {
         const {
           metadata: {
             key,
           }
         } = video;
-        const fileName = key.split('.')[0];
-        return signUrl(`${fileName}.gif`);
+        const filename = key.split('.')[0];
+        return {
+          uid: filename,
+          title: key,
+          src: signUrl(`${uid}.gif`),
+        };
       });
 
-      const fileName = '795eb62a-696e-4973-857d-8fc28be480cf';
-      const videoUrl = signUrl(`${fileName}_k8s.gif`);
-      videoUrls.push(videoUrl);
-      console.log('-------______videoUrls', videoUrls);
+      const uidMock = '795eb62a-696e-4973-857d-8fc28be480cf';
+      const urlMock = signUrl(`${uid}_k8s.gif`);
+      vids.push({
+        uid: uidMock,
+        title: 'foobarkey',
+        src: urlMock,
+      });
+      // vids.push(videoUrl);
+      console.log('-------______vids', vids);
 
       Object.assign(signForm, {
         sign: {
@@ -44,7 +53,7 @@ const signQueries = {
           pronounce,
           state,
           topics, //: topics.map(({ name, value }) => ({ name, value, })).flat(),
-          videoUrls,
+          videos: vids,
         },
       });
     }

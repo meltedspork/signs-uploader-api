@@ -1,31 +1,31 @@
-const signQueries = require('../../../../graphql/resolvers/sign.query');
+const videoMutations = require('../../../../graphql/resolvers/video.mutation');
 
-jest.mock('../../../../config/elasticsearch.config', () => ({
-  // esClient: {},
-}));
+// jest.mock('../../../../config/elasticsearch.config', () => ({
+//   // esClient: {},
+// }));
 
-let params = {
-  uid: 'foobar-001',
-};
+// let params = {
+//   uid: 'foobar-001',
+// };
 
-let contexts = {};
+// let contexts = {};
 
-let obj = {
-  models: {
-    Sign: {
-      findOne: () => Promise.resolve({
-        definition: 'definition',
-        name: 'name',
-        pronounce: 'pronounce',
-        state: 'state',
-        topics: [],
-        videos: [],
-      }),
-    },
-  },
-};
+// let obj = {
+//   models: {
+//     Sign: {
+//       findOne: () => Promise.resolve({
+//         definition: 'definition',
+//         name: 'name',
+//         pronounce: 'pronounce',
+//         state: 'state',
+//         topics: [],
+//         videos: [],
+//       }),
+//     },
+//   },
+// };
 
-describe('Sign Queries', function () {
+describe('Video Mutations', function () {
   test('viewSign', async () => {
     // const queryResult = await signQueries.viewSign(null, params, obj);
     // expects(queryResult).toEqual(queryResult);
