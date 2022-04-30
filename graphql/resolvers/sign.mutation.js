@@ -42,16 +42,16 @@ const signMutations = {
       throw err;
     }
   },
-  async updateSign (_root, { uid, signInput }) {
-    console.log('signInput', signInput);
+  async updateSign (_root, { uid, signInput }, { user }) {
+    const { id: userId } = user;
     const {
+      videoFile,
       name: nameInput,
       pronounce: pronounceInput,
       definition: definitionInput,
       topics: topicInputs,
     } = signInput;
-    const transaction = await sequelize.transaction()
-    console.log('topicInputs', topicInputs);
+    const transaction = await sequelize.transaction();
 
     try {
       const updatedSign = await Sign.update({
@@ -70,6 +70,15 @@ const signMutations = {
         plain: true,
         transaction,
       });
+
+      const { id: signId } = updatedSign[1];
+      console.log('signId::::', signId);
+
+      if (videoFile) {
+        // transaction = await videoUpload(videoFile, transaction, userId, signId);
+        await videoUpload(userId, signId, videoFile, transaction);
+      }
+
       await updatedSign[1].setTopics(
         await Promise.all(
           topicInputs.map(async (uid) => {
@@ -81,7 +90,6 @@ const signMutations = {
 
       await transaction.commit();
 
-      // console.log('-------______updatedSign[1]', updatedSign[1]);
       console.log('-------______updatedSign', updatedSign)
 
       await updateSignDocument(updatedSign[1]);
@@ -101,7 +109,7 @@ const signMutations = {
         pronounce,
         state,
         topics,
-        videoUrls: ['WOW videoUrl'],
+        videos: [],
       };
     } catch(err) {
       console.log('Rolling back: ', err);

@@ -3,6 +3,7 @@ const {
   Model,
 } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
+const { signUrl } = require('../services/aws-s3-sign');
 
 module.exports = (sequelize) => {
   class Video extends Model {
@@ -48,7 +49,15 @@ module.exports = (sequelize) => {
     metadata: {
       allowNull: false,
       type: DataTypes.JSONB,
-    }
+    },
+    src: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        const { key } = this.metadata;
+        filename = key.split('.')[0];
+        return signUrl(`${filename}.gif`);
+      },
+    },
   }, {
     scopes: {
       serialize: {

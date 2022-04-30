@@ -1,67 +1,25 @@
 const { esClient } = require('../../config/elasticsearch.config');
 const models = require('../../models');
-const { signUrl } = require('../../services/aws-s3-sign');
 
 const signQueries = {
   async viewSign (_root, { uid }) {
     let signForm = {};
 
     if (uid) {
-      const {
-        definition,
-        name,
-        pronounce,
-        state,
-        topics,
-        videos,
-      } = await models.Sign.findOne({
-        where: { uid },
+      const sign = await models.Sign.findOne({
+        where: {
+          uid,
+        },
         include: [
           'topics',
           'videos',
         ],
       });
-
-      vids = videos.map((video) => {
-        const {
-          metadata: {
-            key,
-          }
-        } = video;
-        const filename = key.split('.')[0];
-        return {
-          uid: filename,
-          title: key,
-          src: signUrl(`${uid}.gif`),
-        };
-      });
-
-      const uidMock = '795eb62a-696e-4973-857d-8fc28be480cf';
-      const urlMock = signUrl(`${uid}_k8s.gif`);
-      vids.push({
-        uid: uidMock,
-        title: 'foobarkey',
-        src: urlMock,
-      });
-      // vids.push(videoUrl);
-      console.log('-------______vids', vids);
-
-      Object.assign(signForm, {
-        sign: {
-          name,
-          definition,
-          pronounce,
-          state,
-          topics, //: topics.map(({ name, value }) => ({ name, value, })).flat(),
-          videos: vids,
-        },
-      });
+      Object.assign(signForm, { sign });
     }
 
-    const allTopics = await models.Topic.findAll();
-    Object.assign(signForm, {
-      topics: allTopics,
-    });
+    const topics = await models.Topic.findAll();
+    Object.assign(signForm, { topics });
 
     console.log('signForm:', signForm);
     return signForm;
