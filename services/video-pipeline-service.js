@@ -1,7 +1,7 @@
 const { Video } = require('../models');
 const { uploadToBucketInput } = require('./aws-s3-sign');
 
-const videoUpload = async (userId, signId, videoFile, transaction) => {
+const videoUpload = async (videoFile, transaction, userId, signId) => {
   console.log('videoUpload!!!!!! --- videoFile:', videoFile);
   console.log('videoUpload!!!!!! --- userId:', userId);
   console.log('videoUpload!!!!!! --- signId:', signId);

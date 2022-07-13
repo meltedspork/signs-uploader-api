@@ -10,25 +10,30 @@ const { saveSignDocument, updateSignDocument } = require('../../services/elastic
 const signMutations = {
   async createSign (_root, { signInput }, { user }) {
     const { id: userId } = user;
+    console.log('createSign:::::: signInputsignInputsignInput', signInput);
     const {
       videoFile,
-      name,
-      pronounce,
-      definition,
+      name: nameInput,
+      pronounce: pronounceInput,
+      definition: definitionInput,
+      topics: topicInputs,
     } = signInput;
     console.log('videoFilevideoFilevideoFile', videoFile);
     let transaction = await sequelize.transaction();
 
     try {
       const signCreated = await Sign.create({
-        name,
-        pronounce,
-        definition,
+        name: nameInput,
+        pronounce: pronounceInput,
+        definition: definitionInput,
         user_id: userId,
       }, { transaction });
 
+      transaction = await _updateTopics(signCreated, transaction, topicInputs);
+
       if (videoFile) {
-        transaction = videoUpload(videoFile, transaction, userId, signCreated.id);
+        transaction = await videoUpload(videoFile, transaction, userId, signCreated.id);
+        console.log('transaction::::', transaction);
       }
 
       await transaction.commit();
@@ -75,18 +80,11 @@ const signMutations = {
       console.log('signId::::', signId);
 
       if (videoFile) {
-        transaction = await videoUpload(userId, signId, videoFile, transaction);
-        // await videoUpload(userId, signId, videoFile, transaction);
+        transaction = await videoUpload(videoFile, transaction, userId, signId);
+        console.log('transaction::::', transaction);
       }
 
-      await updatedSign[1].setTopics(
-        await Promise.all(
-          topicInputs.map(async (uid) => {
-            return await Topic.findByUid(uid);
-          })
-        ),
-        { transaction },
-      );
+      transaction = await _updateTopics(updatedSign[1], transaction, topicInputs);
 
       await transaction.commit();
 
@@ -118,5 +116,16 @@ const signMutations = {
     }
   }
 };
+
+const _updateTopics = async (instanceSignModel, transaction, topics) => {
+  await instanceSignModel.setTopics(
+    await Promise.all(
+      topics.map((uid) => Topic.findByUid(uid))
+    ),
+    { transaction },
+  );
+
+  return transaction;
+}
 
 module.exports = signMutations;
