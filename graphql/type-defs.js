@@ -61,8 +61,8 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    createSign(signInput: SignInput): Sign @hasScope(scope: ["write:signs"])
-    updateSign(uid: UUID!, signInput: SignInput): Sign @hasScope(scope: ["write:signs"])
+    createSign(signInput: SignInput): SignForm! @hasScope(scope: ["write:signs"])
+    updateSign(uid: UUID!, signInput: SignInput): SignForm! @hasScope(scope: ["write:signs"])
 
     createTopic(topicInput: TopicInput): Topic @hasScope(scope: ["write:signs"])
     updateTopic(uid: UUID!, topicInput: TopicInput): Topic @hasScope(scope: ["write:signs"])

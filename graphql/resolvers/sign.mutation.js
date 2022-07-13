@@ -39,8 +39,12 @@ const signMutations = {
       await transaction.commit();
 
       saveSignDocument(signCreated);
+      const topics = await Topic.findAll();
 
-      return signCreated;
+      return {
+        sign: signCreated,
+        topics,
+      };
     } catch(err) {
       console.log('Rolling back: ', err);
       transaction.rollback();
@@ -67,10 +71,6 @@ const signMutations = {
         where: {
           uid,
         },
-        include: [
-          Topic,
-          Video,
-        ],
         returning: true,
         plain: true,
         transaction,
@@ -91,23 +91,32 @@ const signMutations = {
       console.log('-------______updatedSign', updatedSign)
 
       await updateSignDocument(updatedSign[1]);
-
+      const foundUpdatedSign = await _findSign(updatedSign[1].id)
       const {
         definition,
         name,
         pronounce,
         state,
         topics,
-      } = updatedSign[1];
+        videos,
+      } = foundUpdatedSign ;
+
+      console.log('topics-topics: ', topics);
+      console.log('videos-videos: ', videos);
+
+      const allTopics = await Topic.findAll();
 
       return {
-        uid,
-        definition,
-        name,
-        pronounce,
-        state,
-        topics,
-        videos: [],
+        sign: {
+          uid,
+          definition,
+          name,
+          pronounce,
+          state,
+          topics,
+          videos,
+        },
+        topics: allTopics,
       };
     } catch(err) {
       console.log('Rolling back: ', err);
@@ -126,6 +135,27 @@ const _updateTopics = async (instanceSignModel, transaction, topics) => {
   );
 
   return transaction;
+}
+
+const _findSign = async (signId) => {
+  const sign = await Sign.findByPk(signId, {
+    include: [
+      {
+        model: Topic,
+        as: 'topics',
+        through: {
+          attributes: [],
+        },
+      },
+      {
+        model: Video,
+        as: 'videos',
+      },
+    ],
+  });
+
+  console.log('_findSign: sign', sign);
+  return sign;
 }
 
 module.exports = signMutations;
