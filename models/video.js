@@ -24,10 +24,6 @@ module.exports = (sequelize) => {
       allowNull: false,
       type: DataTypes.STRING,
     },
-    file_name: {
-      allowNull: false,
-      type: DataTypes.STRING,
-    },
     user_id: {
       allowNull: false,
       type: DataTypes.INTEGER,
@@ -46,16 +42,20 @@ module.exports = (sequelize) => {
         as: 'signId',
       }
     },
-    metadata: {
-      allowNull: false,
+    metadata_gif: {
+      allowNull: true,
+      type: DataTypes.JSONB,
+    },
+    metadata_mov: {
+      allowNull: true,
       type: DataTypes.JSONB,
     },
     src: {
       type: DataTypes.VIRTUAL,
       get() {
-        const { key } = this.metadata;
-        filename = key.split('.')[0];
-        return signUrl(`${filename}.gif`);
+        if (this.metadata_mov && this.metadata_mov.Key) {
+          return signUrl(`${this.metadata_mov.Key.split('.')[0]}.gif`);
+        }
       },
     },
   }, {
@@ -68,8 +68,6 @@ module.exports = (sequelize) => {
             'sign_id',
             'signId',
             'SignId',
-            'file_name',
-            'metadata',
             'createdAt',
             'updatedAt',
           ],

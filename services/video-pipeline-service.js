@@ -1,5 +1,5 @@
 const { Video } = require('../models');
-const { uploadToBucket } = require('./aws-s3-sign');
+const { uploadToBucketInput } = require('./aws-s3-sign');
 
 const videoUpload = async (userId, signId, videoFile, transaction) => {
   console.log('videoUpload!!!!!! --- videoFile:', videoFile);
@@ -13,25 +13,31 @@ const videoUpload = async (userId, signId, videoFile, transaction) => {
 
   if (filename && createReadStream) {
     console.log('filename _______>', filename);
+    const title = filename.split('.')[0];
     const videoFileStreamed = createReadStream();
     console.log('filed _______>', videoFileStreamed);
 
-    const uploadedToBucket = await uploadToBucket(videoFileStreamed, filename);
-    console.log('uploadedToBucket _______>', uploadedToBucket);
-
     const videoCreated = await Video.create({
-      title: filename,
-      file_name: uploadedToBucket.key,
+      title,
       user_id: userId,
       sign_id: signId,
-      metadata: uploadedToBucket,
     }, { transaction });
 
-    console.log('videoCreated!!!!!! ---', videoCreated);
+    const fileNameUnique = _createUniquefileName(videoCreated);
+    const uploadedToBucket = await uploadToBucketInput(videoFileStreamed, fileNameUnique);
+    console.log('uploadedToBucket _______>', uploadedToBucket);
+
+    await videoCreated.update({
+      metadata_mov: uploadedToBucket,
+    }, { transaction });
+
+    console.log('videoCreated.update _______>', videoCreated);
   }
 
   return transaction;
 }
+
+const _createUniquefileName = ({ uid, title }) =>  `${uid}_${title}`;
 
 module.exports = {
   videoUpload,

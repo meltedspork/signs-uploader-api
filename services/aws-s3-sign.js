@@ -1,15 +1,19 @@
-const { v4: uuidv4 } = require('uuid');
-const { s3, S3_BUCKET_INPUT } = require('../config/aws.s3.config');
+const {
+  s3,
+  S3_BUCKET_INPUT,
+} = require('../config/aws.s3.config');
 const { cloudFrontSigner, CLOUDFRONT_BASE_URL } = require('../config/aws.cloudfront.config');
 
-const uploadToBucket = async (fileReadStream, fileName) => {
-  const fileNameUnique = `${uuidv4()}_${fileName}`;
-
+const uploadToBucketInput = async (fileReadStream, fileName) => {
   return await s3.upload({
     Bucket: S3_BUCKET_INPUT,
-    Key: fileNameUnique,
+    Key: fileName,
     Body: fileReadStream, 
   }).promise();
+};
+
+const removeFromBucket = async ({ Bucket, Key }) => {
+  return await s3.deleteObject({ Bucket, Key }).promise();
 };
 
 const signUrl = (fileName) => {
@@ -26,6 +30,7 @@ const signUrl = (fileName) => {
 };
 
 module.exports = {
-  uploadToBucket,
+  uploadToBucketInput,
+  removeFromBucket,
   signUrl,
 };

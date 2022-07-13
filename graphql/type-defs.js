@@ -67,7 +67,7 @@ const typeDefs = gql`
     createTopic(topicInput: TopicInput): Topic @hasScope(scope: ["write:signs"])
     updateTopic(uid: UUID!, topicInput: TopicInput): Topic @hasScope(scope: ["write:signs"])
 
-    deleteVideo(uid: UUID!, signUid: UUID!): Sign @hasScope(scope: ["write:signs"])
+    deleteVideo(uid: UUID!, signUid: UUID!): SignForm! @hasScope(scope: ["write:signs"])
   }
 `;
 

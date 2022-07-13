@@ -101,7 +101,6 @@ module.exports = (sequelize) => {
             'userId',
             'UserId',
             'sign_id',
-            'file_name',
             'createdAt',
             'updatedAt',
           ],

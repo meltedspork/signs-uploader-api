@@ -51,7 +51,7 @@ const signMutations = {
       definition: definitionInput,
       topics: topicInputs,
     } = signInput;
-    const transaction = await sequelize.transaction();
+    let transaction = await sequelize.transaction();
 
     try {
       const updatedSign = await Sign.update({
@@ -75,8 +75,8 @@ const signMutations = {
       console.log('signId::::', signId);
 
       if (videoFile) {
-        // transaction = await videoUpload(videoFile, transaction, userId, signId);
-        await videoUpload(userId, signId, videoFile, transaction);
+        transaction = await videoUpload(userId, signId, videoFile, transaction);
+        // await videoUpload(userId, signId, videoFile, transaction);
       }
 
       await updatedSign[1].setTopics(

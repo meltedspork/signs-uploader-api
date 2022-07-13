@@ -2,6 +2,7 @@ require('dotenv').config();
 const AWS = require('aws-sdk');
 
 const S3_BUCKET_INPUT = process.env.AWS_S3_BUCKET_INPUT;
+const S3_BUCKET_OUTPUT = process.env.AWS_S3_BUCKET_OUTPUT;
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -13,5 +14,6 @@ const s3 = new AWS.S3();
 
 module.exports = {
   S3_BUCKET_INPUT,
+  S3_BUCKET_OUTPUT,
   s3,
 };
