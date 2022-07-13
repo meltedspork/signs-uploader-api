@@ -17,7 +17,7 @@ const signMutations = {
       definition,
     } = signInput;
     console.log('videoFilevideoFilevideoFile', videoFile);
-    let transaction = await sequelize.transaction()
+    let transaction = await sequelize.transaction();
 
     try {
       const signCreated = await Sign.create({
@@ -27,18 +27,18 @@ const signMutations = {
         user_id: userId,
       }, { transaction });
 
-      // if (videoFile) {
+      if (videoFile) {
         transaction = videoUpload(videoFile, transaction, userId, signCreated.id);
-      // }
+      }
 
       await transaction.commit();
 
       saveSignDocument(signCreated);
 
       return signCreated;
-    } catch(e) {
+    } catch(err) {
       console.log('Rolling back: ', err);
-      await transaction.rollback();
+      transaction.rollback();
       throw err;
     }
   },
