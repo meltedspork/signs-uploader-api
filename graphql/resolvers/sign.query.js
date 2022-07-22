@@ -22,6 +22,7 @@ const signQueries = {
     Object.assign(signForm, { topics });
 
     console.log('signForm:', signForm);
+
     return signForm;
   },
   async viewSigns (_root, args, { res }) {
