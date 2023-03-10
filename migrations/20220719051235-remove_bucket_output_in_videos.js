@@ -1,7 +1,7 @@
-// 'use strict';
+'use strict';
 
-// module.exports = {
-//   up: async (queryInterface) => {
-//     await queryInterface.removeColumn('Videos', 'bucket_output');
-//   },
-// };
+module.exports = {
+  up: async (queryInterface) => {
+    // await queryInterface.removeColumn('Videos', 'bucket_output');
+  },
+};
