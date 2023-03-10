@@ -2,7 +2,6 @@ require('dotenv').config();
 
 const express = require('express');
 const router = express.Router();
-const fetch = require('node-fetch');
 
 const sequelizeConfig = require('../config/sequelize.config');
 const elasticsearchConfig = require('../config/elasticsearch.config');
@@ -97,12 +96,6 @@ router.get('/status', async (_req, res) => {
   }
 
   res.send(authenticateObject);
-});
-
-router.get('/image.jpg', async (_req, res) => {
-  const { body } = await fetch(signUrl(process.env.TEST_CLOUDFRONT_FILE_KEY));
-  res.set('Content-Type', 'image/jpg');
-  res.send(body);
 });
 
 module.exports = router;
