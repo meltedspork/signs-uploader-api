@@ -67,9 +67,10 @@ router.get('/status', async (_req, res) => {
 
 router.get('/display', async (_req, res) => {
   try {
+    const testCloudfrontFileKey = process.env.TEST_CLOUDFRONT_FILE_KEY;
     const obj = await s3.headObject({
       Bucket: S3_BUCKET_OUTPUT,
-      Key: process.env.TEST_CLOUDFRONT_FILE_KEY,
+      Key: testCloudfrontFileKey,
     }).promise();
 
     console.log('---------obj');
@@ -82,7 +83,10 @@ router.get('/display', async (_req, res) => {
     console.log('obj', obj);
     console.log(`Object "${obj}" exists`);
 
-    res.send({test_image: obj});
+    res.send({
+      url: signUrl(testCloudfrontFileKey),
+      test_image: obj,
+    });
   } catch (err) {
     let reason = null;
     if (err.statusCode === 403) {
