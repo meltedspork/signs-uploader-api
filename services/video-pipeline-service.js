@@ -23,7 +23,7 @@ const videoUpload = async (videoFile, transaction, userId, signId) => {
       sign_id: signId,
     }, { transaction });
 
-    const fileNameUnique = _createUniquefileName(videoCreated);
+    const fileNameUnique = _createUniquefileName(videoCreated, filename);
     const uploadedToBucket = await uploadToBucketInput(videoFileStreamed, fileNameUnique);
     console.log('uploadedToBucket _______>', uploadedToBucket);
 
@@ -37,7 +37,7 @@ const videoUpload = async (videoFile, transaction, userId, signId) => {
   return transaction;
 }
 
-const _createUniquefileName = ({ uid, title }) =>  `${uid}_${title}`;
+const _createUniquefileName = ({ uid }, filename) =>  `${uid}_${filename}`;
 
 module.exports = {
   videoUpload,

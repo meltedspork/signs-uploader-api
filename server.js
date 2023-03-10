@@ -16,9 +16,10 @@ const logService = require('./services/log.service');
 
 const configRoute = require('./routes/config.route');
 const statusRoute = require('./routes/status.route');
+const videoStatusRoute = require('./routes/video-status.route');
 const graphqlRoute = require('./routes/graphql.route');
  
-var app = express();
+const app = express();
 app.set('trust proxy', 'loopback');
 app.use(cors({
   credentials: true,
@@ -34,12 +35,11 @@ app.use(express.urlencoded({limit: '25mb'}));
 app.use(firebaseSessionMiddleware);
 
 app.use(configRoute);
-
 app.use(statusRoute);
 
 app.use(checkJwtMiddleware);
+app.use(videoStatusRoute);
 app.use(graphqlRoute);
-
 app.use(errorMiddleware);
 
 if (process.env.NODE_ENV === 'production') {

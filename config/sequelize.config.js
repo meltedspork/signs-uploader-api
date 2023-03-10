@@ -1,5 +1,5 @@
 require('dotenv').config();
-const postgresOptions = require('../sequelize-config');
+const postgresOptions = require('../sequelize/config');
 
 const Sequelize = require('sequelize');
 const logService = require('../services/log.service');

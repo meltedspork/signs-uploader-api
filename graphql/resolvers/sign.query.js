@@ -38,10 +38,14 @@ const signQueries = {
       body: {
         from: offset,
         size: limit,
-        query: { match_all: {}},
-        sort: [
-          { name: { order: 'asc' }},
-        ],
+        query: {
+          match_all: {},
+        },
+        sort: [{
+          name: {
+            order: 'asc',
+          },
+        }],
       }
     });
     console.log('results----->>>', results);

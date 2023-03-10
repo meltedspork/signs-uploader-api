@@ -3,7 +3,7 @@ const {
   Model,
 } = require('sequelize');
 const { v4: uuidv4 } = require('uuid');
-const { S3_BUCKET_OUTPUT } = require('../config/aws.s3.config');
+const { s3, S3_BUCKET_OUTPUT } = require('../config/aws.s3.config');
 const { signUrl } = require('../services/aws-s3-sign');
 
 module.exports = (sequelize) => {
@@ -22,10 +22,6 @@ module.exports = (sequelize) => {
       unique: true,
     },
     title: {
-      allowNull: false,
-      type: DataTypes.STRING,
-    },
-    bucket_output: {
       allowNull: false,
       type: DataTypes.STRING,
     },
@@ -59,7 +55,40 @@ module.exports = (sequelize) => {
       type: DataTypes.VIRTUAL,
       get() {
         // if (this.metadata_mov && this.metadata_mov.Key) {
-          return signUrl(`${this.metadata_mov.Key.split('.')[0]}.gif`);
+        // } else {
+        (async () => {
+
+        // }
+        try {
+          const obj = await s3.headObject({
+            Bucket: S3_BUCKET_OUTPUT,
+            Key: `${this.metadata_mov.Key.split('.')[0]}.gif`,
+          }).promise();
+          console.log('---------obj');
+          console.log('---------obj');
+          console.log('---------obj');
+          console.log('---------obj');
+          console.log('---------obj');
+          console.log('---------obj');
+          console.log('---------obj');
+          console.log('obj', obj);
+          console.log(`Object "${obj}" exists`);
+        } catch (err) {
+          if (err.statusCode === 403) {
+            console.log(`Bucket "${bucket}" Access Denied`);
+          }
+          if (err.statusCode >= 400 && err.statusCode < 500) {
+            console.log(`Bucket "${bucket}" Not Found`);
+          }
+          throw err
+        }
+      })();
+        // if (this.metadata_mov && this.metadata_mov.Key) {
+          // if (this.metadata_mov && this.metadata_mov.Key) {
+          //   return signUrl(`${this.metadata_mov.Key.split('.')[0]}.gif`);
+          // } else {
+          //   'foobar';
+          // }
         // } else {}
         //   s3.headObject({
         //     Key: this.bucket_output || S3_BUCKET_OUTPUT,
@@ -74,7 +103,7 @@ module.exports = (sequelize) => {
         //       // Do stuff with signedUrl
         //     }
         //   });
-        }
+        // }
       },
     },
   }, {

@@ -10,6 +10,7 @@ services:
       - "4000:4000"
     networks:
       - elastic
+      # - localstack
       - postgres
 
   postgres:
@@ -57,5 +58,7 @@ services:
 networks:
   postgres:
     driver: bridge
+  # localstack:
+  #   driver: bridge
   elastic:
     driver: bridge

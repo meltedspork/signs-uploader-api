@@ -1,15 +1,42 @@
 const {
   s3,
   S3_BUCKET_INPUT,
+  S3_BUCKET_OUTPUT,
 } = require('../config/aws.s3.config');
 const { cloudFrontSigner, CLOUDFRONT_BASE_URL } = require('../config/aws.cloudfront.config');
 
+// const getFileFromBucketOutput = async (key) => {
+//   console.log(`checking Bucket "${S3_BUCKET_OUTPUT}"`);
+//   try {
+//     return await s3.headObject({
+//       Bucket: S3_BUCKET_OUTPUT,
+//       Key: 
+//     });
+//     console.log(`Bucket "${bucket}" exists`);
+//   } catch (err) {
+//     if (err.statusCode === 403) {
+//       console.log(`Bucket "${bucket}" Access Denied`);
+//     }
+//     if (err.statusCode >= 400 && err.statusCode < 500) {
+//       console.log(`Bucket "${bucket}" Not Found`);
+//     }
+//     throw err
+//   }
+// }
+
 const uploadToBucketInput = async (fileReadStream, fileName) => {
-  return await s3.upload({
-    Bucket: S3_BUCKET_INPUT,
-    Key: fileName,
-    Body: fileReadStream, 
-  }).promise();
+  try {
+    const data = await s3.upload({
+      Bucket: S3_BUCKET_INPUT,
+      Key: fileName,
+      Body: fileReadStream, 
+    }).promise();
+    console.log('uploadToBucketInput data:', data);
+    return data;
+    ;
+  } catch (err) {
+    console.log('uploadToBucketInput err:', err);
+  }
 };
 
 const removeFromBucket = async ({ Bucket, Key }) => {
