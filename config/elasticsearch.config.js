@@ -3,7 +3,7 @@ const elasticsearch = require('@elastic/elasticsearch');
 const logService = require('../services/log.service');
 
 var client = new elasticsearch.Client({
-  node: process.env.SEARCHBOX_URL
+  node: process.env.SEARCHBOX_SSL_URL
 });
 
 client.cluster.health({}, (err, resp, status) => { 
