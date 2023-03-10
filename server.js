@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const secure = require('ssl-express-www');
 
 const errorMiddleware = require('./middlewares/error.middleware');
 const checkJwtMiddleware = require('./middlewares/check-jwt.middleware');
@@ -43,6 +44,7 @@ app.use(graphqlRoute);
 app.use(errorMiddleware);
 
 if (process.env.NODE_ENV === 'production') {
+  app.use(secure);
   app.listen(process.env.PORT, () => logService.info(`Running a GraphQL API server at ${process.env.PORT}`));
 } else {
   const fs = require('fs');
