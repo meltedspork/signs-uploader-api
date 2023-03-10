@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const router = express.Router();
+const fetch = require('node-fetch');
 
 const sequelizeConfig = require('../config/sequelize.config');
 const elasticsearchConfig = require('../config/elasticsearch.config');
@@ -33,7 +34,7 @@ router.get('/status', async (_req, res) => {
     Object.assign(authenticateObject, {
       database: {
         status: false,
-        error,
+        raw_error: error,
       }
     });
   }
@@ -57,15 +58,11 @@ router.get('/status', async (_req, res) => {
     Object.assign(authenticateObject, {
       elasticsearch: {
         status: false,
-        error,
+        raw_error: error,
       }
     });
   }
 
-  res.send(authenticateObject);
-});
-
-router.get('/display', async (_req, res) => {
   try {
     const testCloudfrontFileKey = process.env.TEST_CLOUDFRONT_FILE_KEY;
     const obj = await s3.headObject({
@@ -73,21 +70,15 @@ router.get('/display', async (_req, res) => {
       Key: testCloudfrontFileKey,
     }).promise();
 
-    console.log('---------obj');
-    console.log('---------obj');
-    console.log('---------obj');
-    console.log('---------obj');
-    console.log('---------obj');
-    console.log('---------obj');
-    console.log('---------obj');
-    console.log('obj', obj);
-    console.log(`Object "${obj}" exists`);
-
-    res.send({
-      url: signUrl(testCloudfrontFileKey),
-      test_image: obj,
+    Object.assign(authenticateObject, {
+      cloudfront: {
+        status: true,
+        url: signUrl(testCloudfrontFileKey),
+        object: obj,
+      },
     });
-  } catch (err) {
+  } catch (error) {
+    console.log('!!!! errorerrorerror', error);
     let reason = null;
     if (err.statusCode === 403) {
       reason = `Bucket "${S3_BUCKET_OUTPUT}" Access Denied`;
@@ -95,13 +86,23 @@ router.get('/display', async (_req, res) => {
     if (err.statusCode >= 400 && err.statusCode < 500) {
       reason = `Bucket "${S3_BUCKET_OUTPUT}" Not Found`;
     }
-    res.send({
-      test_image: 'error',
-      status_code: err.statusCode,
-      reason: reason,
-      raw: err,
+    Object.assign(authenticateObject, {
+      cloudfront: {
+        status: false,
+        status_code: statusCode,
+        reason,
+        raw_error: error,
+      }
     });
   }
+
+  res.send(authenticateObject);
+});
+
+router.get('/image.jpg', async (_req, res) => {
+  const { body } = await fetch(signUrl(process.env.TEST_CLOUDFRONT_FILE_KEY));
+  res.set('Content-Type', 'image/jpg');
+  res.send(body);
 });
 
 module.exports = router;
