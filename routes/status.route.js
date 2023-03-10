@@ -7,10 +7,8 @@ const sequelizeConfig = require('../config/sequelize.config');
 const elasticsearchConfig = require('../config/elasticsearch.config');
 const checkJwtMiddleware = require('../middlewares/check-jwt.middleware');
 
-if (process.env.NODE_ENV === 'production') {
-  if (process.env.ENABLE_STATUS_IN_PRODUCTION !== 'true') {
-    router.use(checkJwtMiddleware);
-  }
+if (process.env.NODE_ENV === 'production' && process.env.Z_ENABLE_STATUS_IN_PRODUCTION !== 'true') {
+  router.use(checkJwtMiddleware);
 }
 
 const { s3, S3_BUCKET_OUTPUT } = require('../config/aws.s3.config');
