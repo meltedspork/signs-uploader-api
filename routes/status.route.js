@@ -13,6 +13,9 @@ if (process.env.NODE_ENV === 'production') {
   }
 }
 
+const { s3, S3_BUCKET_OUTPUT } = require('../config/aws.s3.config');
+const { signUrl } = require('../services/aws-s3-sign');
+
 router.get('/status', async (_req, res) => {
   let authenticateObject = {
     env: process.env.NODE_ENV,
@@ -63,7 +66,32 @@ router.get('/status', async (_req, res) => {
 });
 
 router.get('/display', async (_req, res) => {
-  res.send({test_image: true});
+  try {
+    const obj = await s3.headObject({
+      Bucket: S3_BUCKET_OUTPUT,
+      Key: process.env.TEST_CLOUDFRONT_FILE_KEY,
+    }).promise();
+
+    console.log('---------obj');
+    console.log('---------obj');
+    console.log('---------obj');
+    console.log('---------obj');
+    console.log('---------obj');
+    console.log('---------obj');
+    console.log('---------obj');
+    console.log('obj', obj);
+    console.log(`Object "${obj}" exists`);
+  } catch (err) {
+    if (err.statusCode === 403) {
+      console.log(`Bucket "${bucket}" Access Denied`);
+    }
+    if (err.statusCode >= 400 && err.statusCode < 500) {
+      console.log(`Bucket "${bucket}" Not Found`);
+    }
+    throw err
+  }
+  
+  res.send({test_image: obj});
 });
 
 module.exports = router;
