@@ -8,7 +8,9 @@ const elasticsearchConfig = require('../config/elasticsearch.config');
 const checkJwtMiddleware = require('../middlewares/check-jwt.middleware');
 
 if (process.env.NODE_ENV === 'production') {
-  router.use(checkJwtMiddleware);
+  if (process.env.ENABLE_STATUS_IN_PRODUCTION !== 'true') {
+    router.use(checkJwtMiddleware);
+  }
 }
 
 router.get('/status', async (_req, res) => {
@@ -58,6 +60,10 @@ router.get('/status', async (_req, res) => {
   }
 
   res.send(authenticateObject);
+});
+
+router.get('/display', async (_req, res) => {
+  res.send({test_image: true});
 });
 
 module.exports = router;
