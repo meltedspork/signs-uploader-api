@@ -75,10 +75,10 @@ module.exports = (sequelize) => {
           console.log(`Object "${obj}" exists`);
         } catch (err) {
           if (err.statusCode === 403) {
-            console.log(`Bucket "${bucket}" Access Denied`);
+            console.log(`Bucket "${S3_BUCKET_OUTPUT}" Access Denied`);
           }
           if (err.statusCode >= 400 && err.statusCode < 500) {
-            console.log(`Bucket "${bucket}" Not Found`);
+            console.log(`Bucket "${S3_BUCKET_OUTPUT}" Not Found`);
           }
           throw err
         }

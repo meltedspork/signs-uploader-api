@@ -81,17 +81,23 @@ router.get('/display', async (_req, res) => {
     console.log('---------obj');
     console.log('obj', obj);
     console.log(`Object "${obj}" exists`);
+
+    res.send({test_image: obj});
   } catch (err) {
+    let reason = null;
     if (err.statusCode === 403) {
-      console.log(`Bucket "${bucket}" Access Denied`);
+      reason = `Bucket "${S3_BUCKET_OUTPUT}" Access Denied`;
     }
     if (err.statusCode >= 400 && err.statusCode < 500) {
-      console.log(`Bucket "${bucket}" Not Found`);
+      reason = `Bucket "${S3_BUCKET_OUTPUT}" Not Found`;
     }
-    throw err
+    res.send({
+      test_image: 'error',
+      status_code: err.statusCode,
+      reason: reason,
+      raw: err,
+    });
   }
-  
-  res.send({test_image: obj});
 });
 
 module.exports = router;
