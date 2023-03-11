@@ -1,6 +1,6 @@
 const firebaseAdmin = require('firebase-admin');
 
-firebaseAdmin.initializeApp({
+const firebaseAdminRef = firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert({
     type: process.env.FIREBASE_ADMIN_TYPE,
     project_id: process.env.FIREBASE_CLIENT_PROJECT_ID,
@@ -16,4 +16,4 @@ firebaseAdmin.initializeApp({
   databaseURL: process.env.FIREBASE_CLIENT_DATABASE_URL,
 });
 
-module.exports = firebaseAdmin;
+module.exports = firebaseAdminRef;
