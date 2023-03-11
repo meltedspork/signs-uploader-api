@@ -3,13 +3,15 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 
-const sequelizeConfig = require('../config/sequelize.config');
-const elasticsearchConfig = require('../config/elasticsearch.config');
 const checkJwtMiddleware = require('../middlewares/check-jwt.middleware');
 
 if (process.env.NODE_ENV === 'production' && process.env.Z_ENABLE_STATUS_IN_PRODUCTION !== 'true') {
   router.use(checkJwtMiddleware);
 }
+
+const sequelizeConfig = require('../config/sequelize.config');
+const elasticsearchConfig = require('../config/elasticsearch.config');
+const firebaseAdmin = require('../config/firebase-admin.config');
 
 const { s3, S3_BUCKET_OUTPUT } = require('../config/aws.s3.config');
 const { signUrl } = require('../services/aws-s3-sign');
@@ -36,24 +38,33 @@ router.get('/status', async (_req, res) => {
     });
   }
 
-  try {
-    const { esClient } = elasticsearchConfig;
-    const {
-      body: {
-        status,
-      },
-      statusCode,
-    } = await esClient.cluster.health();
+  // try {
     Object.assign(authenticateObject, {
-      elasticsearch: {
-        status,
-        code: statusCode,
+      firebase: {
+        database: firebaseAdmin.database(),
+      },
+    });
+  // } catch (error) {
+  //   console.log('!!!! errorerrorerror', error);
+  //   Object.assign(authenticateObject, {
+  //     elasticsearch: {
+  //       status: false,
+  //       raw_error: error,
+  //     }
+  //   });
+  // }
+
+  try {
+    const { sequelize } = sequelizeConfig;
+    await sequelize.authenticate();
+    Object.assign(authenticateObject, {
+      database: {
+        status: 'ok',
       },
     });
   } catch (error) {
-    console.log('!!!! errorerrorerror', error);
     Object.assign(authenticateObject, {
-      elasticsearch: {
+      database: {
         status: false,
         raw_error: error,
       }
