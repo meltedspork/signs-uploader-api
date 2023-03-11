@@ -38,21 +38,23 @@ router.get('/status', async (_req, res) => {
     });
   }
 
-  // try {
+  try {
+    const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
     Object.assign(authenticateObject, {
       firebase: {
-        database: firebaseAdmin.database(),
+        token: firebaseToken,
+        database: await firebaseToken.database(),
       },
     });
-  // } catch (error) {
-  //   console.log('!!!! errorerrorerror', error);
-  //   Object.assign(authenticateObject, {
-  //     elasticsearch: {
-  //       status: false,
-  //       raw_error: error,
-  //     }
-  //   });
-  // }
+  } catch (error) {
+    console.log('!!!! errorerrorerror', error);
+    Object.assign(authenticateObject, {
+      firebase: {
+        status: false,
+        raw_error: error,
+      }
+    });
+  }
 
   try {
     const { sequelize } = sequelizeConfig;
