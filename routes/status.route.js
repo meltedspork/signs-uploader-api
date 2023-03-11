@@ -20,18 +20,19 @@ router.get('/status', async (_req, res) => {
   let authenticateObject = {
     env: process.env.NODE_ENV,
   };
+  const testCloudfrontFileKey = process.env.TEST_CLOUDFRONT_FILE_KEY;
 
   try {
     const { sequelize } = sequelizeConfig;
     await sequelize.authenticate();
     Object.assign(authenticateObject, {
-      database: {
+      postgres: {
         status: 'ok',
       },
     });
   } catch (error) {
     Object.assign(authenticateObject, {
-      database: {
+      postgres: {
         status: false,
         raw_error: error,
       }
@@ -39,7 +40,7 @@ router.get('/status', async (_req, res) => {
   }
 
   try {
-    const firebaseToken = await firebaseAdmin.auth().createCustomToken(req.user.sub);
+    const firebaseToken = await firebaseAdmin.auth().createCustomToken(testCloudfrontFileKey);
     Object.assign(authenticateObject, {
       firebase: {
         token: firebaseToken,
@@ -74,7 +75,6 @@ router.get('/status', async (_req, res) => {
   }
 
   try {
-    const testCloudfrontFileKey = process.env.TEST_CLOUDFRONT_FILE_KEY;
     const obj = await s3.headObject({
       Bucket: S3_BUCKET_OUTPUT,
       Key: testCloudfrontFileKey,
