@@ -21,8 +21,9 @@
     "release:reindex": "node scripts/reindexElasticsearchForSigns.js",
     "release": "npm run release:migrate && npm run release:reindex",
     "lint": "eslint .",
+    "seed:user": "docker-compose exec server node scripts/connectAuthenticationUserToAppUser.js $1 $2 $3",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
-    "seed:user": "docker-compose exec server node scripts/connectAuthenticationUserToAppUser.js $1 $2 $3"
+    "user:promote": "node ./scripts/connectAuthenticationUserToAppUser.js $1 $2 $3"
   },
   "author": "",
   "license": "ISC",
