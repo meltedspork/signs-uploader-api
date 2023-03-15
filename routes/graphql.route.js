@@ -42,6 +42,9 @@ router.use(
       permissions = ['read:signs', 'write:signs'];
     } else {
       userFound = await User.findOne({ where: { idProviderUserId } });
+      logService.warn('userFound ---->>>>_____', userFound);
+      logService.warn('!userFound ---->>>>_____', !userFound);
+      logService.warn('!userFound.idProviderUserId ---->>>>_____', !userFound.idProviderUserId);
       if (!userFound || !userFound.idProviderUserId) {
         throw new Error(UNAUTHORIZED);
       }
